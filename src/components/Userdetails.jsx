@@ -208,24 +208,30 @@
 
 // export default Userdetails;
 
-
-
 import React, { useState } from 'react';
 import { userData } from "../json/data"
-import Pagination from './Pagination';
+import { useNavigate } from 'react-router-dom';
 
 const Userdetails = () => {
-    // Sample data for the table
     const [data, setData] = useState(userData);
     const [searchVal, setSearchVal] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
+    const navigate = useNavigate();
 
-    const handleDelete = (id) => {
-        const updatedData = data.filter((item) => item.id !== id);
-        setData(updatedData);
+    const handleRowClick = (userid) => {
+        navigate(`/userdetails/${userid}`);
     };
 
-    const handleBlock = (id) => {
+    const handleDelete = (id, e) => {
+        e.stopPropagation();  
+        if (window.confirm('Are you sure you want to delete this user?')) {
+            const updatedData = data.filter((item) => item.id !== id);
+            setData(updatedData);
+        }
+    };
+
+    const handleBlock = (id, e) => {
+        e.stopPropagation();  
         alert(`User with ID: ${id} has been blocked.`);
     };
 
@@ -266,53 +272,19 @@ const Userdetails = () => {
                 <table className="min-w-full table-auto border-collapse">
                     <thead>
                         <tr className="border-b bg-gray-100">
-                            <th
-                                className="px-4 py-2 text-left cursor-pointer"
-                            >
-                                SI No.
-                            </th>
-                            <th
-                                className="px-4 py-2 text-left cursor-pointer"
-
-                            >
-                                First Name
-                            </th>
-                            <th
-                                className="px-4 py-2 text-left cursor-pointer"
-
-                            >
-                                Last Name
-                            </th>
-                            <th
-                                className="px-4 py-2 text-left cursor-pointer"
-
-                            >
-                                Email
-                            </th>
-                            <th
-                                className="px-4 py-2 text-left cursor-pointer"
-
-                            >
-                                Mobile No
-                            </th>
-                            <th
-                                className="px-4 py-2 text-left cursor-pointer"
-
-                            >
-                                City
-                            </th>
-                            <th
-                                className="px-4 py-2 text-left cursor-pointer"
-
-                            >
-                                Pincode
-                            </th>
+                            <th className="px-4 py-2 text-left">SI No.</th>
+                            <th className="px-4 py-2 text-left">First Name</th>
+                            <th className="px-4 py-2 text-left">Last Name</th>
+                            <th className="px-4 py-2 text-left">Email</th>
+                            <th className="px-4 py-2 text-left">Mobile No</th>
+                            <th className="px-4 py-2 text-left">City</th>
+                            <th className="px-4 py-2 text-left">Pincode</th>
                             <th className="px-4 py-2 text-left">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {currentData.map((item) => (
-                            <tr key={item.id} className="border-b hover:bg-gray-50">
+                            <tr key={item.id} onClick={() => handleRowClick(item.id)} className="border-b hover:bg-gray-50">
                                 <td className="px-4 py-2 font-bold">{item.id}</td>
                                 <td className="px-4 py-2">{item.firstName}</td>
                                 <td className="px-4 py-2">{item.lastName}</td>
@@ -323,13 +295,13 @@ const Userdetails = () => {
                                 <td className="px-4 py-2">
                                     <div className="flex space-x-2">
                                         <button
-                                            onClick={() => handleBlock(item.id)}
+                                            onClick={(e) => handleBlock(item.id, e)}
                                             className="bg-yellow-500 text-white py-1 px-4 rounded-lg hover:bg-yellow-600"
                                         >
                                             Block
                                         </button>
                                         <button
-                                            onClick={() => handleDelete(item.id)}
+                                            onClick={(e) => handleDelete(item.id, e)}
                                             className="bg-red-600 text-white py-1 px-4 rounded-lg hover:bg-red-700"
                                         >
                                             Delete
@@ -341,15 +313,12 @@ const Userdetails = () => {
                     </tbody>
                 </table>
             </div>
-
-            {/* <Pagination totalPages={totalPages} currentPage={currentPage} handlePageChange={handlePageChange} /> */}
-            {/* Pagination Controls */}
             <div className="mt-4 flex justify-between items-center">
                 <div className="mt-4 flex justify-center items-center space-x-2">
                     <button
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className={`${currentPage === 1 ?" bg-gray-300 ": "bg-blue-300"} px-4 py-2 rounded-md hover:bg-gray-400`}
+                        className={`${currentPage === 1 ? " bg-gray-300 " : "bg-blue-300"} px-4 py-2 rounded-md hover:bg-gray-400`}
                     >
                         Previous
                     </button>
@@ -366,7 +335,7 @@ const Userdetails = () => {
                     <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className={`${currentPage === totalPages ?" bg-gray-300 ": "bg-blue-300"} px-4 py-2 rounded-md hover:bg-gray-400`}
+                        className={`${currentPage === totalPages ? " bg-gray-300 " : "bg-blue-300"} px-4 py-2 rounded-md hover:bg-gray-400`}
                     >
                         Next
                     </button>

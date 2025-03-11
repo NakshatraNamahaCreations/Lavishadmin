@@ -1,50 +1,5 @@
-// import { useState } from "react";
-// import { service } from "../json/services";
-
-// const ServiceManagement = () => {
-//     const [serviceName, setServiceName] = useState("");
-
-//     return (
-//         <div>
-//             <h1 className="text-3xl font-bold mb-6">Service Management</h1>
-//             <form className="bg-white p-4 flex flex-col">
-//                 <label className="font-bold ">
-//                     Service Name:
-//                     <select onChange={(e) => setServiceName(e.target.value)} value={serviceName}  className="font-normal mx-4 outline-none px-4 py-2 rounded-md border-2">
-//                         {
-//                             service.map(item => {
-//                                 return <option key={item.serviceName} value={item.serviceName}>{item.serviceName}</option>;  // Add return statement
-//                             })
-//                         }
-//                     </select>
-//                 </label>
-
-//                 <label className="font-bold ">
-//                     Price:
-//                     <input placeholder="Enter Amount" className="font-normal p-2 outline-none w-[400px] border-2 rounded-md m-4" />
-//                 </label>
-
-//                 <div className="flex gap-2">
-//                     <label className="font-bold ">
-//                         Description:
-//                     </label>
-//                     <textarea
-//                         placeholder="Enter Description"
-//                         className="p-2 outline-none border-2 rounded-md w-[600px]"
-//                         rows={5}
-//                     />
-//                 </div>
-
-//                 <input value="Submit" type="submit" className="float-end mt-6 w-[120px] cursor-pointer bg-yellow-500 p-3 text-white font-bold text-xl rounded-lg" />
-//             </form>
-//         </div>
-//     );
-// };
-
-// export default ServiceManagement;
 
 import { useState } from "react";
-
 import { coupons } from "../json/data";
 import Pagination from "./Pagination";
 
@@ -202,6 +157,7 @@ const CouponCreations = () => {
                                 <th className="px-4 py-2 text-left cursor-pointer">SI No.</th>
                                 <th className="px-4 py-2 text-left cursor-pointer">Coupon Name</th>
                                 <th className="px-4 py-2 text-left cursor-pointer">Coupon Code</th>
+                                <th className="px-4 py-2 text-left cursor-pointer">Status</th>
                                 <th className="px-4 py-2 text-left cursor-pointer">Start Date</th>
                                 <th className="px-4 py-2 text-left cursor-pointer">End Date</th>
                                 <th className="px-4 py-2 text-left">Actions</th>
@@ -213,6 +169,7 @@ const CouponCreations = () => {
                                     <td className="px-4 py-2 font-bold">{indexOfFirstItem + idx + 1}</td>
                                     <td className="px-4 py-2">{item.couponName}</td>
                                     <td className="px-4 py-2">{item.couponCode}</td>
+                                    <td className={`px-4 py-2 ${item.status === "Active" ? "text-green-600":"text-red-600"} font-medium`}>{item.status}</td>
                                     <td className="px-4 py-2">{new Date(item.startDate).toLocaleDateString('en-CA')}</td>
                                     <td className="px-4 py-2">{new Date(item.endDate).toLocaleDateString('en-CA')}</td>
                                     <td className="px-4 py-2">

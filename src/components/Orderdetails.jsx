@@ -2,12 +2,17 @@ import { useState } from "react";
 import { orderData } from "../json/data"
 import Pagination from "./Pagination";
 import { MdOutlineCurrencyRupee } from "react-icons/md";
+import { useNavigate } from 'react-router-dom';
 
 const Orderdetails = () => {
 
     const [searchVal, setSearchVal] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-
+    const navigate = useNavigate();
+    
+    const handleRowClick = (orderid) => {
+        navigate(`/order/${orderid}`);
+    };
     // Handle search
     const filteredData = orderData.filter(item => {
         if (searchVal.trim() === "") {
@@ -80,7 +85,7 @@ const Orderdetails = () => {
                     </thead>
                     <tbody>
                         {currentData.map((item, idx) => (
-                            <tr key={item._id} className="border-b hover:bg-gray-50">
+                            <tr key={item._id} className="border-b hover:bg-gray-50" onClick={() => handleRowClick(item.orderId)}>
                                 <td className="px-4 py-2 font-bold">{indexOfFirstItem + idx + 1}
                                 </td>
                                 <td className="px-4 py-2">{item.orderId}</td>

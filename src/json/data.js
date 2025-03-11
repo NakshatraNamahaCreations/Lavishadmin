@@ -966,6 +966,7 @@ export const coupons = [
         "couponCode": "SUMMER2025",
         "couponDetails": "Enjoy summer discounts on all items.",
         "discount": "25%",
+        "status":"Active",
         "startDate": "2025-06-01T10:00:00Z",
         "endDate": "2025-06-30T23:59:59Z"
     },
@@ -975,6 +976,7 @@ export const coupons = [
         "couponCode": "WINTER25",
         "couponDetails": "Get 25% off on all winter clothing.",
         "discount": "25%",
+        "status":"Deactive",
         "startDate": "2025-12-01T00:00:00Z",
         "endDate": "2025-12-25T23:59:59Z"
     },
@@ -984,6 +986,7 @@ export const coupons = [
         "couponCode": "BLACKFRI2025",
         "couponDetails": "Exclusive discounts for Black Friday shopping.",
         "discount": "40%",
+        "status":"Deactive",
         "startDate": "2025-11-25T00:00:00Z",
         "endDate": "2025-11-28T23:59:59Z"
     },
@@ -993,6 +996,7 @@ export const coupons = [
         "couponCode": "NY2025",
         "couponDetails": "Celebrate the new year with 50% off on selected items.",
         "discount": "50%",
+        "status":"Active",
         "startDate": "2025-01-01T00:00:00Z",
         "endDate": "2025-01-31T23:59:59Z"
     },
@@ -1002,6 +1006,7 @@ export const coupons = [
         "couponCode": "SPRING20",
         "couponDetails": "Special spring offers on garden and outdoor products.",
         "discount": "20%",
+        "status":"Deactive",
         "startDate": "2025-03-01T00:00:00Z",
         "endDate": "2025-03-31T23:59:59Z"
     },
@@ -1011,6 +1016,7 @@ export const coupons = [
         "couponCode": "FESTIVE2025",
         "couponDetails": "Get festive discounts for the holiday season.",
         "discount": "30%",
+        "status":"Active",
         "startDate": "2025-12-01T10:00:00Z",
         "endDate": "2025-12-15T23:59:59Z"
     },
@@ -1020,6 +1026,7 @@ export const coupons = [
         "couponCode": "BACK2SCHOOL",
         "couponDetails": "Special offer for students returning to school.",
         "discount": "15%",
+        "status":"Active",
         "startDate": "2025-08-01T00:00:00Z",
         "endDate": "2025-08-31T23:59:59Z"
     },
@@ -1029,6 +1036,7 @@ export const coupons = [
         "couponCode": "WINTERCLEAR2025",
         "couponDetails": "Clearance sale on all winter wear.",
         "discount": "60%",
+        "status":"Active",
         "startDate": "2025-01-01T00:00:00Z",
         "endDate": "2025-01-15T23:59:59Z"
     },
@@ -1038,6 +1046,7 @@ export const coupons = [
         "couponCode": "VIP2025DISCOUNT",
         "couponDetails": "Exclusive VIP discounts for our loyal customers.",
         "discount": "15%",
+        "status":"Active",
         "startDate": "2025-05-01T09:00:00Z",
         "endDate": "2025-05-15T23:59:59Z"
     },
@@ -1047,6 +1056,7 @@ export const coupons = [
         "couponCode": "EASTER2025",
         "couponDetails": "Celebrate Easter with special offers on select items.",
         "discount": "35%",
+        "status":"Deactive",
         "startDate": "2025-04-01T00:00:00Z",
         "endDate": "2025-04-30T23:59:59Z"
     }
