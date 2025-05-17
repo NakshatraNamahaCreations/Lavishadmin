@@ -448,7 +448,7 @@ const AddService = () => {
                 }
                 className="p-2 border border-gray-300 rounded-md"
               >
-               <option value="">Select Type</option>
+              <option value="">Select Type</option>
                 <option value="text">Text</option>
                 <option value="number">Number</option>
                 <option value="date">Date</option>

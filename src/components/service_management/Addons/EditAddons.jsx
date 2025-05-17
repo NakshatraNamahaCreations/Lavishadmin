@@ -382,7 +382,7 @@ const EditAddons = () => {
 
   const handleAddCustomizedInput = () => {
     const { label, inputType, maxValue } = customizedInput;
-    if (label && inputType && maxValue) {
+    if (label && inputType ) {
       setCustomizedInputs([...customizedInputs, customizedInput]);
       setCustomizedInput({ label: "", inputType: "", maxValue: "" });
     } else {
