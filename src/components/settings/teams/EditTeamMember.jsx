@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
 
 // Define available tabs and their labels
 const availableTabs = [
@@ -24,96 +25,109 @@ const availableTabs = [
   { key: "teams", label: "Teams" },
 ];
 
-const AddTeamMember = () => {
-  const [newMember, setNewMember] = useState({
+const EditTeamMember = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [member, setMember] = useState({
     name: '',
     mobile: '',
     email: '',
-    password: '',
     profileImage: null,
     accessTabs: [],
   });
-
   const [selectAll, setSelectAll] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchMemberDetails();
+  }, [id]);
+
+  const fetchMemberDetails = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/admin/auth/getAdminById/${id}`);
+      const memberData = response.data.admin;
+      setMember({
+        name: memberData.name,
+        mobile: memberData.mobile,
+        email: memberData.email,
+        accessTabs: memberData.accessTabs,
+      });
+      setSelectAll(memberData.accessTabs.length === availableTabs.length);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching member details:", error);
+      alert("Failed to fetch member details");
+      navigate("/teams");
+    }
+  };
 
   // Handle "Select All" checkbox
   const handleSelectAllChange = () => {
     if (selectAll) {
-      // Unselect all if "Select All" is checked
-      setNewMember({ ...newMember, accessTabs: [] });
+      setMember({ ...member, accessTabs: [] });
     } else {
-      // Select all tabs
-      setNewMember({ ...newMember, accessTabs: availableTabs.map(tab => tab.key) });
+      setMember({ ...member, accessTabs: availableTabs.map(tab => tab.key) });
     }
     setSelectAll(!selectAll);
   };
 
   // Handle "Clear All" button
   const handleClearAll = () => {
-    setNewMember({ ...newMember, accessTabs: [] });
+    setMember({ ...member, accessTabs: [] });
     setSelectAll(false);
   };
 
   // Handle individual tab checkbox change
   const handleCheckboxChange = (tabKey) => {
-    const updatedTabs = newMember.accessTabs.includes(tabKey)
-      ? newMember.accessTabs.filter((key) => key !== tabKey)
-      : [...newMember.accessTabs, tabKey];
+    const updatedTabs = member.accessTabs.includes(tabKey)
+      ? member.accessTabs.filter((key) => key !== tabKey)
+      : [...member.accessTabs, tabKey];
 
-    setNewMember({ ...newMember, accessTabs: updatedTabs });
-  };
-
-  const handleAddMember = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-
-    formData.append('name', newMember.name);
-    formData.append('email', newMember.email);
-    formData.append('mobile', newMember.mobile);
-    formData.append('password', newMember.password);
-
-    // Attach image file if provided
-    if (newMember.profileImage) {
-      formData.append('profileImage', newMember.profileImage);
-    }
-
-    // Convert accessTabs array to JSON string
-    formData.append('accessTabs', JSON.stringify(newMember.accessTabs));
-
-    try {
-      const res = await axios.post('http://localhost:5000/api/admin/auth/register', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-
-      alert("Team member added successfully!");
-      console.log("Created Admin:", res.data.admin);
-    } catch (err) {
-      console.error("Error:", err.response?.data || err.message);
-      alert(err.response?.data?.message || "Failed to add team member");
-    }
-
-    setNewMember({
-      name: '',
-      mobile: '',
-      email: '',
-      password: '',
-      profileImage: null,
-      accessTabs: [],
-    });
+    setMember({ ...member, accessTabs: updatedTabs });
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewMember({ ...newMember, [name]: value });
+    setMember({ ...member, [name]: value });
   };
 
   const handleFileChange = (e) => {
-    setNewMember({ ...newMember, profileImage: e.target.files[0] });
+    setMember({ ...member, profileImage: e.target.files[0] });
   };
 
+  const handleUpdateMember = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+
+    formData.append('name', member.name);
+    formData.append('email', member.email);
+    formData.append('mobile', member.mobile);
+    formData.append('accessTabs', JSON.stringify(member.accessTabs));
+
+    if (member.profileImage) {
+      formData.append('profileImage', member.profileImage);
+    }
+
+    try {
+      await axios.put(`http://localhost:5000/api/admin/auth/update/${id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      alert("Team member updated successfully!");
+      navigate("/settings/teams");
+    } catch (error) {
+      console.error("Error:", error.response?.data || error.message);
+      alert(error.response?.data?.message || "Failed to update team member");
+    }
+  };
+
+  if (loading) {
+    return <div className="text-center py-4">Loading...</div>;
+  }
+
   return (
-    <form onSubmit={handleAddMember} encType="multipart/form-data" className="bg-white p-6 rounded-md shadow-md">
-      <h2 className="text-xl font-semibold mb-4 text-gray-700">Add New Team Member</h2>
+    <form onSubmit={handleUpdateMember} encType="multipart/form-data" className="bg-white p-6 rounded-md shadow-md">
+      <h2 className="text-xl font-semibold mb-4 text-gray-700">Edit Team Member</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>
@@ -121,7 +135,7 @@ const AddTeamMember = () => {
           <input
             type="text"
             name="name"
-            value={newMember.name}
+            value={member.name}
             onChange={handleInputChange}
             className="px-4 py-2 border border-gray-300 rounded-md w-full"
             required
@@ -132,7 +146,7 @@ const AddTeamMember = () => {
           <input
             type="text"
             name="mobile"
-            value={newMember.mobile}
+            value={member.mobile}
             onChange={handleInputChange}
             maxLength={10}
             className="px-4 py-2 border border-gray-300 rounded-md w-full"
@@ -144,18 +158,7 @@ const AddTeamMember = () => {
           <input
             type="email"
             name="email"
-            value={newMember.email}
-            onChange={handleInputChange}
-            className="px-4 py-2 border border-gray-300 rounded-md w-full"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1">Password</label>
-          <input
-            type="password"
-            name="password"
-            value={newMember.password}
+            value={member.email}
             onChange={handleInputChange}
             className="px-4 py-2 border border-gray-300 rounded-md w-full"
             required
@@ -184,7 +187,7 @@ const AddTeamMember = () => {
             />
             <span className="text-gray-600">Select All</span>
           </label>
-          {newMember.accessTabs.length > 0 && (
+          {member.accessTabs.length > 0 && (
             <button
               type="button"
               onClick={handleClearAll}
@@ -201,7 +204,7 @@ const AddTeamMember = () => {
             <label key={tab.key} className="flex items-center space-x-2">
               <input
                 type="checkbox"
-                checked={newMember.accessTabs.includes(tab.key)}
+                checked={member.accessTabs.includes(tab.key)}
                 onChange={() => handleCheckboxChange(tab.key)}
               />
               <span className="text-gray-600">{tab.label}</span>
@@ -210,16 +213,23 @@ const AddTeamMember = () => {
         </div>
       </div>
 
-      <div className="mt-6 flex justify-end">
+      <div className="mt-6 flex justify-end gap-4">
+        <button
+          type="button"
+          onClick={() => navigate("/settings/teams")}
+          className="bg-gray-500 hover:bg-gray-600 transition-colors text-white font-medium px-6 py-2 rounded"
+        >
+          Cancel
+        </button>
         <button
           type="submit"
-          className="bg-gray-600 hover:bg-gray-700 transition-colors text-white font-medium px-6 py-2 rounded"
+          className="bg-blue-600 hover:bg-blue-700 transition-colors text-white font-medium px-6 py-2 rounded"
         >
-          Add Member
+          Update Member
         </button>
       </div>
     </form>
   );
 };
 
-export default AddTeamMember;
+export default EditTeamMember; 

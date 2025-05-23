@@ -42,8 +42,19 @@ export const getUploadAxios = () => {
   });
 };
 
+export const getAxios = () => {
+  return axios.create({
+    baseURL: API_BASE_URL,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    withCredentials: true
+  });
+};
+
 export default {
   getAuthToken,
   getAuthAxios,
-  getUploadAxios
+  getUploadAxios,
+  getAxios
 }; 

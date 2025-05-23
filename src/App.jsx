@@ -40,7 +40,9 @@ import Reports from "./components/Reports.jsx";
 import PaymentsDetails from "./components/payment/PaymentsDetails.jsx";
 import Teams from "./components/settings/teams/Teams.jsx";
 import AddTeamMember from "./components/settings/teams/AddTeamMember.jsx";
+import EditTeamMember from "./components/settings/teams/EditTeamMember.jsx";
 import OrderDetails from "./components/orderDetails/orderDetails.jsx";
+import Enquiry from "./components/Enquiry.jsx";
 
 const AppContent = () => {
   const [openSidebar, setOpenSidebar] = useState(false);
@@ -77,6 +79,8 @@ const AppContent = () => {
                     <Routes>
                       <Route path="/" element={<Dashboard />} />
                       <Route path="/users" element={<Userdetails />} />
+                      <Route path="/enquiry" element={<Enquiry />} />
+
                       <Route path="/banner" element={<Banner />} />
                       <Route
                         path="/catgory/add_category"
@@ -175,7 +179,7 @@ const AppContent = () => {
                       <Route path="/report" element={<Reports />} />
                       <Route path="/settings/teams" element={<Teams />} />
                       <Route path="/teams/add-member" element={<AddTeamMember />} />
-                      <Route path="/teams/add-member" element={<AddTeamMember />} />
+                      <Route path="/teams/edit-member/:id" element={<EditTeamMember />} />
                     </Routes>
                   </div>
                 </div>
