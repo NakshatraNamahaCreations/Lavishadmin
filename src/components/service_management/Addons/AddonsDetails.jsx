@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { getAxios } from "../../../utils/api";
 
 const AddonsDetails = () => {
   const { addonId } = useParams();
@@ -15,7 +16,7 @@ const AddonsDetails = () => {
   const fetchAddonDetails = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/addons/${addonId}`);
+      const response = await getAxios().get(`/addons/${addonId}`);
       setAddon(response.data.data);
       console.log("addon", response.data.data);
     } catch (error) {

@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { IoArrowBack, IoEyeSharp } from "react-icons/io5";
 import axios from "axios";
 import Pagination from "../Pagination";
+import { getAxios } from "../../utils/api";
 
 const Bookingdetails = () => {
   const { date } = useParams(); // Extract date from URL params
@@ -23,7 +24,7 @@ const Bookingdetails = () => {
     const fetchOrders = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`http://localhost:5000/api/orders/getordersbystatus/`, {
+        const response = await getAxios().get(`/orders/getordersbystatus/`, {
           params: {
             eventDate: date,
             search: searchVal, // <-- This only updates when button is clicked

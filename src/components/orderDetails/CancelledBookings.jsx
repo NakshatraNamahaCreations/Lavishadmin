@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { IoArrowBack, IoEyeSharp } from "react-icons/io5";
 import axios from "axios";
 import Pagination from "../Pagination"; // Ensure this is correctly imported
+import { getAxios } from "../../utils/api";
 
 const CancelledBookings = () => {
   const [orderData, setOrderData] = useState([]);
@@ -24,7 +25,7 @@ const CancelledBookings = () => {
       setError("");
   
       try {
-        const response = await axios.get("http://localhost:5000/api/orders/getordersbystatus/", {
+        const response = await getAxios().get("/orders/getordersbystatus/", {
           params: {
             search: searchVal, // This only updates on search button click
             page: currentPage,

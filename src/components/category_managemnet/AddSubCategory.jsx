@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
-import { getAuthAxios, getAuthToken } from "../../utils/api";
+import { getAuthAxios, getAuthToken, getAxios } from "../../utils/api";
 import axios from "axios";
 
 const AddSubCategory = () => {
@@ -84,7 +84,7 @@ const AddSubCategory = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.get("http://localhost:5000/api/categories/");
+      const res = await getAxios().get("/categories/");
       setCategories(res.data.data);
     } catch (error) {
       setError(error.message || "Something went wrong");
@@ -97,7 +97,7 @@ const AddSubCategory = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.get("http://localhost:5000/api/subcategories/");
+      const res = await getAxios().get("/subcategories/");
       setData(res.data.data);
       setFilteredData(res.data.data);
     } catch (error) {

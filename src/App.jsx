@@ -43,6 +43,8 @@ import AddTeamMember from "./components/settings/teams/AddTeamMember.jsx";
 import EditTeamMember from "./components/settings/teams/EditTeamMember.jsx";
 import OrderDetails from "./components/orderDetails/orderDetails.jsx";
 import Enquiry from "./components/Enquiry.jsx";
+import RaiseTicket from "./components/RaiseTicket.jsx";
+import Invoice from "./components/orderDetails/Invoice.jsx";
 
 const AppContent = () => {
   const [openSidebar, setOpenSidebar] = useState(false);
@@ -173,11 +175,16 @@ const AppContent = () => {
                         element={<OrderDetailsCard />}
                       />
                       <Route
+                        path="/invoice/:id"
+                        element={<Invoice />}
+                      />
+                      <Route
                         path="/payment-details"
                         element={<PaymentsDetails />}
                       />
                       <Route path="/report" element={<Reports />} />
-                      <Route path="/settings/teams" element={<Teams />} />
+                      <Route path="/teams" element={<Teams />} />
+                      <Route path="/raised-tickests" element={<RaiseTicket />} />
                       <Route path="/teams/add-member" element={<AddTeamMember />} />
                       <Route path="/teams/edit-member/:id" element={<EditTeamMember />} />
                     </Routes>

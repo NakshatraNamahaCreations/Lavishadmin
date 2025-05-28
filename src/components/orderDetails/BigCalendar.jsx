@@ -3,6 +3,7 @@ import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useNavigate } from "react-router-dom";
+import { getAxios } from "../../utils/api";
 
 const BigCalendar = () => {
   const navigate = useNavigate();
@@ -11,14 +12,31 @@ const BigCalendar = () => {
   const localizer = momentLocalizer(moment);
 
   // Fetch order data from API
+  // useEffect(() => {
+  //   const fetchOrders = async () => {
+  //     try {
+  //       const status = "created"; // You can also make this dynamic via props or state
+  //       const response = await fetch(`http://localhost:5000/api/orders?status=${status}`);
+  //       const data = await response.json();
+  //       console.log("Fetched Orders:", data);
+  //       setBookingData(data);
+  //     } catch (error) {
+  //       console.error("Error fetching orders:", error);
+  //     }
+  //   };
+
+  //   fetchOrders();
+  // }, []);
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const status = "created"; // You can also make this dynamic via props or state
-        const response = await fetch(`http://localhost:5000/api/orders?status=${status}`);
-        const data = await response.json();
-        console.log("Fetched Orders:", data);
-        setBookingData(data);
+        const response = await getAxios().get(`/orders/`, {
+          params: { status },
+        });
+        console.log("Fetched Orders:", response.data);
+        setBookingData(response.data);
       } catch (error) {
         console.error("Error fetching orders:", error);
       }

@@ -9,8 +9,8 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [showServiceDropdown, setShowServiceDropdown] = useState(false);
-  const [showOrderDropdown, setShowOrderDropdown] = useState(false); 
-  const [showSettingsDropdown, setShowSettingsDropdown] = useState(false); 
+  const [showOrderDropdown, setShowOrderDropdown] = useState(false);
+  const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
 
   const { currentAdmin } = useAuth(); // ✅ Added currentAdmin
   console.log("currentAdmin", currentAdmin)
@@ -80,7 +80,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
                 Enquiry
               </Link>
             </li>
-          )} 
+          )}
 
           {currentAdmin?.accessTabs?.includes("users") && (
             <li>
@@ -197,11 +197,19 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
 
           {currentAdmin.accessTabs.includes("teams") && (
             <li>
-              <Link to="/settings/teams" className={`block px-3 py-2 rounded-md ${isActive("/settings/teams") ? "bg-gray-600" : "hover:bg-gray-700"}`}>
+              <Link to="/teams" className={`block px-3 py-2 rounded-md ${isActive("/teams") ? "bg-gray-600" : "hover:bg-gray-700"}`}>
                 Teams
               </Link>
             </li>
           )}
+
+          {currentAdmin.accessTabs.includes("raised_tickets") && (
+            <li>
+              <Link to="/raised-tickests" className={`block px-3 py-2 rounded-md ${isActive("/raised-tickests") ? "bg-gray-600" : "hover:bg-gray-700"}`}>
+                Raise Ticket
+              </Link>
+            </li>
+           )}
         </ul>
 
       </div>

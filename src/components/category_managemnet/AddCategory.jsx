@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FiEdit, FiTrash2, FiCheck, FiX } from "react-icons/fi";
 import axios from "axios";
-import { getAuthAxios, getAuthToken } from "../../utils/api";
+import { getAuthAxios, getAuthToken, getAxios } from "../../utils/api";
 
 const AddCategory = () => {
   const [categories, setCategories] = useState([]);
@@ -58,7 +58,7 @@ const AddCategory = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.get("http://localhost:5000/api/categories/");
+      const res = await getAxios().get("/categories/");
       if (res.status !== 200) {
         throw new Error("something went wrong");
       }

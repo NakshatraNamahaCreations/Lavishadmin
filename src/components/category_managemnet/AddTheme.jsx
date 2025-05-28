@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
-import { getAuthAxios, getUploadAxios, getAuthToken } from "../../utils/api";
+import { getAuthAxios, getUploadAxios, getAuthToken, getAxios } from "../../utils/api";
 import axios from "axios";
 import Pagination from "../Pagination";
 
@@ -135,7 +135,7 @@ const AddTheme = () => {
     setError("");
 
     try {
-      const res = await axios.get("http://localhost:5000/api/themes", {
+      const res = await getAxios().get("http://localhost:5000/api/themes", {
         params: {
           page: currentPage,       // e.g. 1, 2, 3...
           limit: 5,               // Adjust as needed

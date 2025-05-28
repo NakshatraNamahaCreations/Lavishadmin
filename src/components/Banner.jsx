@@ -95,7 +95,7 @@ const Banner = () => {
     setBannerLink(banner.bannerLink);
     setBannerType(banner.bannerType);
     setImagePreview(`http://localhost:5000/images/${banner.bannerImage}`);
-    setBannerImage(null); // <-- here
+    setBannerImage(banner.bannerImage);
     setIsEditing(true);
     setEditBannerId(banner._id);
   };
@@ -285,3 +285,4 @@ const Banner = () => {
 };
 
 export default Banner;
+
