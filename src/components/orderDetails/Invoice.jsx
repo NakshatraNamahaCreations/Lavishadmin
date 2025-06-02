@@ -237,13 +237,6 @@ const Invoice = () => {
                                         <td className="p-2 border">{idx + 1}</td>
                                         <td className="p-2 border">
                                             {item.serviceName}
-                                            {/* {item.customizedInputs.length > 0 && (
-                                                <ul className="mt-1 text-xs text-gray-600 list-disc list-inside">
-                                                    {item.customizedInputs.map(input => (
-                                                        <li key={input._id}><strong>{input.label}:</strong> {input.value}</li>
-                                                    ))}
-                                                </ul>
-                                            )} */}
                                         </td>
                                         <td className="p-2 border text-center">{item.quantity}</td>
                                         <td className="p-2 border">₹{item.price}</td>

@@ -5,6 +5,7 @@ import { FiEdit, FiTrash2, FiSearch } from "react-icons/fi";
 import { IoEyeSharp } from "react-icons/io5";
 import axios from "axios";
 import Pagination from "../Pagination"; // Import the reusable Pagination component
+import { getAuthAxios, getAxios } from "../../utils/api";
 
 const ServiceList = () => {
   const navigate = useNavigate();
@@ -15,12 +16,13 @@ const ServiceList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
+  const authAxios = getAuthAxios()
   // Function to fetch services with pagination and search
   const fetchServices = async (page = 1, search = "") => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/services?page=${page}&limit=10&search=${search}`
+      const response = await getAxios().get(
+        `/services?page=${page}&limit=10&search=${search}`
       );
       const { data, totalPages } = response.data;
       setServices(data);
@@ -35,7 +37,7 @@ const ServiceList = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/services/delete/${id}`);
+      await authAxios().delete(`/services/delete/${id}`);
       fetchServices(page, searchQuery); // Refresh the current page after deletion
     } catch (error) {
       setError(error?.response?.data?.message || "Failed to delete service");

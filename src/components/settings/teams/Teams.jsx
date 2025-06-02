@@ -4,10 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { FiEdit, FiTrash2, FiSearch } from "react-icons/fi";
 import { IoEyeSharp } from "react-icons/io5";
 import { FaUserCircle } from 'react-icons/fa';
+import { getAuthAxios, getAxios } from "../../../utils/api";
 
 const Teams = () => {
   const navigate = useNavigate();
   const [teamMembers, setTeamMembers] = useState([]);
+  const authAxios = getAuthAxios()
 
   // Fetch team members on component mount
   useEffect(() => {
@@ -16,7 +18,7 @@ const Teams = () => {
 
   const fetchTeamMembers = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin/auth/teamMembers");
+      const response = await getAxios().get("/admin/auth/teamMembers");
       setTeamMembers(response.data.admins);
     } catch (error) {
       console.error("Error fetching team members:", error);
@@ -34,7 +36,7 @@ const Teams = () => {
   const handleDeleteMember = async (memberId) => {
     if (window.confirm("Are you sure you want to delete this team member?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/admin/auth/delete/${memberId}`);
+        await authAxios.delete(`/admin/auth/delete/${memberId}`);
         alert("Team member deleted successfully!");
         // Refresh the team members list
         fetchTeamMembers();
@@ -80,7 +82,7 @@ const Teams = () => {
                 <td className="px-4 py-2 text-gray-500">
                   {member.profileImage ? (
                     <img
-                      src={`http://localhost:5000/images/${member.profileImage}`}
+                      src={`${member?.profileImage}`}
                       alt="Profile"
                       className="w-14 h-14 object-cover rounded-full"
                     />
@@ -102,13 +104,13 @@ const Teams = () => {
                 </td>
                 <td className="py-2">
                   <div className="flex justify-center gap-2">
-                    <button 
+                    <button
                       onClick={() => handleEditMember(member._id)}
                       className="text-gray-600 hover:text-gray-800 transition"
                     >
                       <FiEdit size={16} />
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleDeleteMember(member._id)}
                       className="text-red-600 hover:text-red-800 transition"
                     >

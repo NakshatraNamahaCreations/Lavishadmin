@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import { getAuthAxios, getAxios } from '../../../utils/api';
 
 // Define available tabs and their labels
 const availableTabs = [
@@ -37,20 +38,21 @@ const EditTeamMember = () => {
   });
   const [selectAll, setSelectAll] = useState(false);
   const [loading, setLoading] = useState(true);
-
+  const authAxios = getAuthAxios()
   useEffect(() => {
     fetchMemberDetails();
   }, [id]);
 
   const fetchMemberDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/admin/auth/getAdminById/${id}`);
+      const response = await getAxios().get(`/admin/auth/getAdminById/${id}`);
       const memberData = response.data.admin;
       setMember({
         name: memberData.name,
         mobile: memberData.mobile,
         email: memberData.email,
         accessTabs: memberData.accessTabs,
+        profileImage: memberData.profileImage
       });
       setSelectAll(memberData.accessTabs.length === availableTabs.length);
       setLoading(false);
@@ -92,7 +94,7 @@ const EditTeamMember = () => {
   };
 
   const handleFileChange = (e) => {
-    setMember({ ...member, profileImage: e.target.files[0] });
+    setMember({ ...member, profileImage: e.target.value });
   };
 
   const handleUpdateMember = async (e) => {
@@ -109,12 +111,10 @@ const EditTeamMember = () => {
     }
 
     try {
-      await axios.put(`http://localhost:5000/api/admin/auth/update/${id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await authAxios.put(`/admin/auth/update/${id}`, formData);
 
       alert("Team member updated successfully!");
-      navigate("/settings/teams");
+      navigate("/teams");
     } catch (error) {
       console.error("Error:", error.response?.data || error.message);
       alert(error.response?.data?.message || "Failed to update team member");
@@ -126,7 +126,7 @@ const EditTeamMember = () => {
   }
 
   return (
-    <form onSubmit={handleUpdateMember} encType="multipart/form-data" className="bg-white p-6 rounded-md shadow-md">
+    <form onSubmit={handleUpdateMember}  className="bg-white p-6 rounded-md shadow-md">
       <h2 className="text-xl font-semibold mb-4 text-gray-700">Edit Team Member</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -167,8 +167,9 @@ const EditTeamMember = () => {
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-1">Profile Image</label>
           <input
-            type="file"
+            type="text"
             onChange={handleFileChange}
+            value={member.profileImage}
             className="px-4 py-2 border border-gray-300 rounded-md w-full"
           />
         </div>
@@ -176,7 +177,7 @@ const EditTeamMember = () => {
 
       <div className="mt-6">
         <label className="block text-sm font-medium text-gray-700 mb-2">Select Tab Access</label>
-        
+
         {/* Select All / Clear All Buttons */}
         <div className="flex items-center mb-4 justify-between">
           <label className="flex items-center space-x-2">
@@ -216,7 +217,7 @@ const EditTeamMember = () => {
       <div className="mt-6 flex justify-end gap-4">
         <button
           type="button"
-          onClick={() => navigate("/settings/teams")}
+          onClick={() => navigate("/teams")}
           className="bg-gray-500 hover:bg-gray-600 transition-colors text-white font-medium px-6 py-2 rounded"
         >
           Cancel

@@ -5,6 +5,7 @@ import axios from "axios";
 import Pagination from "./Pagination";
 import { FiEdit, FiTrash2, FiSearch } from "react-icons/fi";
 import { IoEyeSharp } from "react-icons/io5";
+import { getAuthAxios, getAxios } from "../utils/api";
 
 const Userdetails = () => {
   const [data, setData] = useState([]);
@@ -16,20 +17,17 @@ const Userdetails = () => {
 
   const limit = 5;
   const navigate = useNavigate();
+  const authAxios = getAuthAxios()
 
   const handleRowClick = (userid) => {
     navigate(`/users/${userid}`);
   };
 
-  // const handleBlock = (id, e) => {
-  //   e.stopPropagation();
-  //   alert(`User with ID: ${id} has been blocked.`);
-  // };
 
   const handleDelete = async (id, e) => {
     e.stopPropagation();
     if (window.confirm("Are you sure you want to delete this user?")) {
-      await axios.delete(`http://localhost:5000/api/admin/users/user/${id}`);
+      await authAxios.delete(`/admin/users/user/${id}`);
       fetchData();
     }
   };
@@ -38,8 +36,8 @@ const Userdetails = () => {
     setLoading(true);
     setError("");
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/admin/users/paginated`,
+      const response = await getAxios().get(
+        `/admin/users/paginated`,
         {
           params: {
             search: searchVal,
@@ -60,8 +58,8 @@ const Userdetails = () => {
     setLoading(true);
     setError("");
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/admin/users/paginated`,
+      const response = await getAxios().get(
+        `/admin/users/paginated`,
         {
           params: {
             page: currentPage,

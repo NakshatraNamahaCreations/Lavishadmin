@@ -67,22 +67,7 @@ const AddonsDetails = () => {
           <Detail label="Subcategory" value={addon.subCategory?.subCategory} />
           <Detail label="Price" value={`₹${addon.price}`} />
           <Detail label="Same Day Delivery" value={addon.samedaydelivery} />
-          {/* <Detail
-            label="Customized Inputs"
-            value={
-              addon.customizedInputs.length > 0 ? (
-                <ul className="list-disc pl-5">
-                  {addon.customizedInputs.map((input, index) => (
-                    <li key={index} className="text-gray-600">
-                      {input}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                "N/A"
-              )
-            }
-          /> */}
+        
 
           {
             addon.customizedInputs.length > 0 ?
@@ -127,7 +112,7 @@ const AddonsDetails = () => {
           <h3 className="text-xl font-semibold text-gray-800 mb-4">🖼 Addon Image</h3>
           {addon.image ? (
             <img
-              src={`http://localhost:5000/images/${addon.image}`}
+              src={`${addon.image}`}
               alt={addon.addonsName}
               className="w-32 h-32 object-cover rounded-md shadow"
             />

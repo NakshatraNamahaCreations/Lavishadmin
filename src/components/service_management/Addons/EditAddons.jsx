@@ -5,7 +5,7 @@ import { FiPlus, FiTrash2 } from "react-icons/fi";
 import { MdCancel } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { getAxios, getUploadAxios } from "../../../utils/api";
+import { getAuthAxios, getAxios, getUploadAxios } from "../../../utils/api";
 
 const EditAddons = () => {
   const navigate = useNavigate();
@@ -47,7 +47,8 @@ const EditAddons = () => {
       setSamedaydelivery(addonData.samedaydelivery || "");
       setAddonsDescription(addonData.addonsDescription || "");
       setCustomizedInputs(addonData.customizedInputs || []);
-      setImagePreview(addonData.image ? `http://localhost:5000/images/${addonData.image}` : "");
+      setImage(addonData.image || "")
+      setImagePreview(addonData.image ? `${addonData.image}` : "");
     } catch (err) {
       console.error("Addon fetch failed:", err);
       setError("Failed to fetch addon details.");
@@ -80,7 +81,7 @@ const EditAddons = () => {
 
   const handleAddCustomizedInput = () => {
     const { label, inputType, maxValue } = customizedInput;
-    if (label && inputType ) {
+    if (label && inputType) {
       setCustomizedInputs([...customizedInputs, customizedInput]);
       setCustomizedInput({ label: "", inputType: "", maxValue: "" });
     } else {
@@ -124,11 +125,11 @@ const EditAddons = () => {
     formData.append("samedaydelivery", samedaydelivery);
     formData.append("addonsDescription", addonsDescription);
     formData.append("customizedInputs", JSON.stringify(customizedInputs));
-    if (image) formData.append("image", image);
+    formData.append("image", image);
 
     try {
-      const uploadAxios = getUploadAxios();
-      const res = await uploadAxios.put(`/addons/update/${addonId}`, formData);
+      const authAxios = getAuthAxios();
+      const res = await authAxios.put(`/addons/update/${addonId}`, formData);
 
       if (res.status === 200) {
         alert("Addon updated successfully!");
@@ -186,22 +187,28 @@ const EditAddons = () => {
             </div>
 
             <div>
-              <label>Addon Image</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="w-full border rounded p-2"
-              />
-            </div>
-
-            <div>
               <label>Price *</label>
               <input
                 type="number"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 className="w-full border rounded p-2"
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">
+                Addon Image URL <span className="text-red-600">*</span>
+              </label>
+              <input
+                type="text"
+                value={image}
+                placeholder="Enter Image URL"
+                onChange={(e) => {
+                  setImage(e.target.value);
+                  setImagePreview(e.target.value);
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-md w-full"
               />
             </div>
 
@@ -219,16 +226,21 @@ const EditAddons = () => {
             </div>
           </div>
 
+          {/* Image Previews */}
           {imagePreview && (
-            <div className="my-4 relative w-fit">
-              <img src={imagePreview} alt="Preview" className="w-32 h-32 object-cover rounded-md" />
+            <div className="relative">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="w-32 h-32 object-cover rounded-md"
+              />
               <button
                 type="button"
+                className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1"
                 onClick={() => {
-                  setImage(null);
+                  setImage("");
                   setImagePreview("");
                 }}
-                className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1"
               >
                 <MdCancel />
               </button>

@@ -117,7 +117,7 @@ const AddonsList = () => {
                     <td className="border px-4 py-2">{addon.subCategory}</td>
                     <td className="border px-4 py-2">{addon.addonsName}</td>
                     <td className="border px-4 py-2">
-                      <img src={`http://localhost:5000/images/${addon.image}`} className="w-20 h-20" />
+                      <img src={`${addon.image}`} className="w-20 h-20" />
                     </td>
                     <td className="border px-4 py-2">{addon.price}</td>
                     <td className="border px-4 py-2" dangerouslySetInnerHTML={{ __html: addon.addonsDescription }} />

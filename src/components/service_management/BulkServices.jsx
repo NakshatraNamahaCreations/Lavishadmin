@@ -4,7 +4,7 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { FiPlus, FiTrash2 } from "react-icons/fi";
 import axios from "axios";
 import { MdCancel } from "react-icons/md";
-import { getAuthToken, getUploadAxios } from "../../utils/api";
+import { getAuthToken, getAxios, getUploadAxios } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -124,7 +124,7 @@ const BulkServices = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/categories/");
+      const response = await getAxios().get("/categories/");
       setCategories(response.data.data);
     } catch (error) {
       setError("Something went wrong");
@@ -134,8 +134,8 @@ const BulkServices = () => {
   const fetchSubcategoriesByCategory = async () => {
     if (!selectedCategory) return;
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/subcategories/category/${selectedCategory}`
+      const response = await getAxios().get(
+        `/subcategories/category/${selectedCategory}`
       );
       setSubCategories(response.data.data);
     } catch (error) {
@@ -146,8 +146,8 @@ const BulkServices = () => {
   const fetchSubsubcategoriesByCategory = async () => {
     if (!selectedSubCategory) return;
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/subsubcategories/subcategory/${selectedSubCategory}`
+      const response = await getAxios().get(
+        `/subsubcategories/subcategory/${selectedSubCategory}`
       );
       setSubSubCategories(response.data.data);
     } catch (error) {
@@ -158,8 +158,8 @@ const BulkServices = () => {
   const fetchThemesBySubSubCategory = async () => {
     if (!selectedSubSubCategory) return;
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/themes/subsubCategory/${selectedSubSubCategory}`
+      const response = await getAxios().get(
+        `/themes/subsubCategory/${selectedSubSubCategory}`
       );
       setThemes(response.data.data);
     } catch (error) {

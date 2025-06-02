@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { getAuthAxios } from '../../../utils/api';
+import { useNavigate } from "react-router-dom"
+
 
 // Define available tabs and their labels
 const availableTabs = [
@@ -34,8 +37,10 @@ const AddTeamMember = () => {
     profileImage: null,
     accessTabs: [],
   });
+  const navigate = useNavigate()
 
   const [selectAll, setSelectAll] = useState(false);
+  const authAxios = getAuthAxios()
 
   // Handle "Select All" checkbox
   const handleSelectAllChange = () => {
@@ -72,19 +77,14 @@ const AddTeamMember = () => {
     formData.append('email', newMember.email);
     formData.append('mobile', newMember.mobile);
     formData.append('password', newMember.password);
+    formData.append('profileImage', newMember.profileImage);
 
-    // Attach image file if provided
-    if (newMember.profileImage) {
-      formData.append('profileImage', newMember.profileImage);
-    }
 
     // Convert accessTabs array to JSON string
     formData.append('accessTabs', JSON.stringify(newMember.accessTabs));
 
     try {
-      const res = await axios.post('http://localhost:5000/api/admin/auth/register', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const res = await authAxios.post('/admin/auth/register', formData);
 
       alert("Team member added successfully!");
       console.log("Created Admin:", res.data.admin);
@@ -101,6 +101,9 @@ const AddTeamMember = () => {
       profileImage: null,
       accessTabs: [],
     });
+
+    navigate("/teams")
+
   };
 
   const handleInputChange = (e) => {
@@ -109,11 +112,12 @@ const AddTeamMember = () => {
   };
 
   const handleFileChange = (e) => {
-    setNewMember({ ...newMember, profileImage: e.target.files[0] });
+    const { name, value } = e.target;
+    setNewMember({ ...newMember, [name]: value });
   };
 
   return (
-    <form onSubmit={handleAddMember} encType="multipart/form-data" className="bg-white p-6 rounded-md shadow-md">
+    <form onSubmit={handleAddMember} className="bg-white p-6 rounded-md shadow-md">
       <h2 className="text-xl font-semibold mb-4 text-gray-700">Add New Team Member</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -163,9 +167,11 @@ const AddTeamMember = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1">Profile Image</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1">Profile Image Link</label>
           <input
-            type="file"
+            type="text"
+            name='profileImage'
+            placeholder='Enter your profile link'
             onChange={handleFileChange}
             className="px-4 py-2 border border-gray-300 rounded-md w-full"
           />
@@ -174,7 +180,7 @@ const AddTeamMember = () => {
 
       <div className="mt-6">
         <label className="block text-sm font-medium text-gray-700 mb-2">Select Tab Access</label>
-        
+
         {/* Select All / Clear All Buttons */}
         <div className="flex items-center mb-4 justify-between">
           <label className="flex items-center space-x-2">

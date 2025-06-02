@@ -9,8 +9,8 @@ const OrderDetails = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [updatingStatus, setUpdatingStatus] = useState(false);
-    const [cancelReason, setCancelReason] = useState("");
-    const statusOptions = ["completed", "cancelled", "created"];
+
+const authAxios = getAuthAxios()
 
     useEffect(() => {
         const fetchOrder = async () => {
@@ -54,7 +54,7 @@ const OrderDetails = () => {
         setUpdatingStatus(true);
 
         try {
-            const response = await getAuthAxios().put(`/orders/updateOrderStatus/${orderDetails._id}`, {
+            const response = await authAxios.put(`/orders/updateOrderStatus/${orderDetails._id}`, {
                 status: newStatus,
                 reason: newStatus === "cancelled" ? reason : undefined,
             });
@@ -157,7 +157,7 @@ const OrderDetails = () => {
                             {/* Main service */}
                             <div className="flex">
                                 <img
-                                    src={`http://localhost:5000/images/${item.image}`}
+                                    src={`${item?.image}`}
                                     alt={item.serviceName}
                                     className="w-24 h-24 object-cover rounded-md mr-4"
                                 />
