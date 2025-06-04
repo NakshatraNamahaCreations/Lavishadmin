@@ -31,7 +31,7 @@
 //     setLoading(true);
 //     setError(null);
 //     try {
-//       const response = await axios.get("http://localhost:5000/api/banners/");
+//       const response = await axios.get("https://api.lavisheventzz.com/api/banners/");
 //       setBannerData(response.data.data || []);
 //     } catch (error) {
 //       setError("Error fetching banners.");
@@ -70,12 +70,12 @@
 //       let response;
 //       if (isEditing && editBannerId) {
 //         response = await getUploadAxios().put(
-//           `http://localhost:5000/api/banners/update/${editBannerId}`,
+//           `https://api.lavisheventzz.com/api/banners/update/${editBannerId}`,
 //           formData
 //         );
 //       } else {
 //         response = await getUploadAxios().post(
-//           "http://localhost:5000/api/banners/create",
+//           "https://api.lavisheventzz.com/api/banners/create",
 //           formData
 //         );
 //       }
@@ -104,7 +104,7 @@
 //    const handleDelete = async (id) => {
 //     // if (window.confirm("Are you sure you want to delete this banner?")) {
 //     try {
-//       await axios.delete(`http://localhost:5000/api/banners/delete/${id}`);
+//       await axios.delete(`https://api.lavisheventzz.com/api/banners/delete/${id}`);
 //       fetchBanner();
 //     } catch (error) {
 //       setError("Error deleting banner.");
@@ -289,6 +289,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { getAuthAxios, getAxios } from "../utils/api";
 
 const Banner = () => {
   const [bannerLink, setBannerLink] = useState("");
@@ -304,7 +305,7 @@ const Banner = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get("http://localhost:5000/api/banners/");
+      const response = await getAxios().get("https://api.lavisheventzz.com/api/banners/");
       setBannerData(response.data.data || []);
     } catch (error) {
       setError("Error fetching banners.");
@@ -332,12 +333,12 @@ const Banner = () => {
 
     try {
       if (isEditing && editBannerId) {
-        await axios.put(
-          `http://localhost:5000/api/banners/update/${editBannerId}`,
+        await getAuthAxios().put(
+          `https://api.lavisheventzz.com/api/banners/update/${editBannerId}`,
           payload
         );
       } else {
-        await axios.post("http://localhost:5000/api/banners/create", payload);
+        await getAuthAxios().post("https://api.lavisheventzz.com/api/banners/create", payload);
       }
 
       resetForm();
@@ -361,7 +362,7 @@ const Banner = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/banners/delete/${id}`);
+      await getAuthAxios().delete(`https://api.lavisheventzz.com/api/banners/delete/${id}`);
       fetchBanner();
     } catch (error) {
       setError("Error deleting banner.");

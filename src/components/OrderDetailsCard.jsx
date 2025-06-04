@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { orderData } from "../json/data";
 import axios from "axios";
 import { MdOutlineCurrencyRupee } from "react-icons/md";
+import { getAxios } from "../utils/api";
 
 const OrderDetailsCard = () => {
     const { _id } = useParams();
@@ -14,7 +15,7 @@ const OrderDetailsCard = () => {
         setLoading(true)
         setError("")
         try {
-            const response = await axios.get(`http://localhost:5000/api/admin/orders/order/${_id}`)
+            const response = await getAxios().get(`https://api.lavisheventzz.com/api/admin/orders/order/${_id}`)
             console.log("response: ", response.data.order)
             setOrder(response.data.order)
         } catch (error) {

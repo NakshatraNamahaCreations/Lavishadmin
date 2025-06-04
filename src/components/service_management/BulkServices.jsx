@@ -377,7 +377,7 @@ export default BulkServices;
 
 //   const fetchCategories = async () => {
 //     try {
-//       const response = await axios.get("http://localhost:5000/api/categories/");
+//       const response = await axios.get("https://api.lavisheventzz.com/api/categories/");
 //       setCategories(response.data.data);
 //     } catch (error) {
 //       setError("Something went wrong");
@@ -388,7 +388,7 @@ export default BulkServices;
 //     if (!selectedCategory) return;
 //     try {
 //       const response = await axios.get(
-//         `http://localhost:5000/api/subcategories/category/${selectedCategory}`
+//         `https://api.lavisheventzz.com/api/subcategories/category/${selectedCategory}`
 //       );
 //       setSubCategories(response.data.data);
 //     } catch (error) {
@@ -401,7 +401,7 @@ export default BulkServices;
 
 //     try {
 //       const response = await axios.get(
-//         `http://localhost:5000/api/subsubcategories/subcategory/${selectedSubCategory}`
+//         `https://api.lavisheventzz.com/api/subsubcategories/subcategory/${selectedSubCategory}`
 //       );
 //       setSubSubCategories(response.data.data);
 //     } catch (error) {
@@ -413,7 +413,7 @@ export default BulkServices;
 //     if (!selectedSubSubCategory) return;
 //     try {
 //       const response = await axios.get(
-//         `http://localhost:5000/api/themes/subsubCategory/${selectedSubSubCategory}`
+//         `https://api.lavisheventzz.com/api/themes/subsubCategory/${selectedSubSubCategory}`
 //       );
 //       setThemes(response.data.data);
 //     } catch (error) {

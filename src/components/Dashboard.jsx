@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { useNavigate } from 'react-router-dom';
-import { getAuthToken } from '../utils/api';
+import { getAuthToken, getAxios } from '../utils/api';
 import axios from 'axios';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -30,7 +30,7 @@ const Dashboard = () => {
 
     const fetchServiceCount = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/services/getCount");
+        const res = await getAxios().get("https://api.lavisheventzz.com/api/services/getCount");
         console.log("ServiceCount", res.data);
         setServiceCount(res.data.count || 0);
       } catch (error) {
@@ -41,7 +41,7 @@ const Dashboard = () => {
 
     const fetchUserCount = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/admin/users/getCount");
+        const res = await getAxios().get("https://api.lavisheventzz.com/api/admin/users/getCount");
         console.log("UserCount", res.data);
         setUserCount(res.data.count || 0);
       } catch (error) {
@@ -52,7 +52,7 @@ const Dashboard = () => {
 
     const fetchOrderCount = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/orders/getCount");
+        const res = await getAxios().get("https://api.lavisheventzz.com/api/orders/getCount");
         console.log("OrderCount", res.data);
         setOrderCount(res.data.count || 0);
       } catch (error) {

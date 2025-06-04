@@ -205,6 +205,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Pagination from "./Pagination";
 import { FiEdit, FiTrash2, FiSearch } from "react-icons/fi";
+import { getAuthAxios, getAxios } from "../utils/api";
 
 const CouponCreations = () => {
   // State for coupon form inputs
@@ -231,8 +232,8 @@ const CouponCreations = () => {
       setLoading(true);
       setError("");
       try {
-        const response = await axios.get(
-          "http://localhost:5000/api/coupons/getcoupons",
+        const response = await getAxios().get(
+          "https://api.lavisheventzz.com/api/coupons/getcoupons",
           {
             params: { page: currentPage, limit },
           }
@@ -254,7 +255,7 @@ const CouponCreations = () => {
     setLoading(true);
     setError("");
     try {
-      await axios.delete(`http://localhost:5000/api/coupons/delete/${id}`);
+      await getAuthAxios().delete(`https://api.lavisheventzz.com/api/coupons/delete/${id}`);
       setData(data.filter((item) => item._id !== id));
     } catch (error) {
       console.error("Error deleting coupon:", error);
@@ -282,8 +283,8 @@ const CouponCreations = () => {
     try {
       if (editingId) {
         // Update existing coupon
-        await axios.put(
-          `http://localhost:5000/api/coupons/update/${editingId}`,
+        await getAuthAxios().put(
+          `https://api.lavisheventzz.com/api/coupons/update/${editingId}`,
           newCoupon
         );
         setData(
@@ -294,8 +295,8 @@ const CouponCreations = () => {
         setEditingId(null); // Reset editing state
       } else {
         // Create new coupon
-        const response = await axios.post(
-          "http://localhost:5000/api/coupons/create",
+        const response = await getAuthAxios().post(
+          "https://api.lavisheventzz.com/api/coupons/create",
           newCoupon
         );
         setData([...data, response.data]);

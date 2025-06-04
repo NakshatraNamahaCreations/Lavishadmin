@@ -11,7 +11,7 @@
 //   useEffect(() => {
 //     const fetchOrder = async () => {
 //       try {
-//         const res = await axios.get(`http://localhost:5000/api/orders/orderDetails/${id}`);
+//         const res = await axios.get(`https://api.lavisheventzz.com/api/orders/orderDetails/${id}`);
 //         setOrder(res.data.data);
 //       } catch (err) {
 //         console.error('Error fetching invoice:', err.message);

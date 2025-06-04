@@ -135,7 +135,7 @@
 //     setError("");
 
 //     try {
-//       const res = await getAxios().get("http://localhost:5000/api/themes", {
+//       const res = await getAxios().get("https://api.lavisheventzz.com/api/themes", {
 //         params: {
 //           page: currentPage,       // e.g. 1, 2, 3...
 //           limit: 5,               // Adjust as needed

@@ -26,7 +26,7 @@
 
 //       try {
 //         // Try to call the logout endpoint
-//         const response = await axios.post("http://localhost:5000/api/admin/auth/logout", {},
+//         const response = await axios.post("https://api.lavisheventzz.com/api/admin/auth/logout", {},
 //           {
 //             headers: {
 //               Authorization: `Bearer ${token}`,
@@ -85,6 +85,7 @@ import { RiMenu2Line } from "react-icons/ri";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/authContext.jsx';
+import { getAuthAxios } from '../utils/api.js';
 
 const Navbar = ({ setOpenSidebar, onLogout }) => {
   const navigate = useNavigate();
@@ -95,7 +96,7 @@ const Navbar = ({ setOpenSidebar, onLogout }) => {
       const token = sessionStorage.getItem("accessToken");
 
       try {
-        await axios.post("http://localhost:5000/api/admin/auth/logout", {}, {
+        await getAuthAxios().post("https://api.lavisheventzz.com/api/admin/auth/logout", {}, {
           headers: { Authorization: `Bearer ${token}` }
         });
       } catch (apiError) {

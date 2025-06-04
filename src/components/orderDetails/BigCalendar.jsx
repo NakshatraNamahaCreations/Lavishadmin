@@ -16,7 +16,7 @@ const BigCalendar = () => {
   //   const fetchOrders = async () => {
   //     try {
   //       const status = "created"; // You can also make this dynamic via props or state
-  //       const response = await fetch(`http://localhost:5000/api/orders?status=${status}`);
+  //       const response = await fetch(`https://api.lavisheventzz.com/api/orders?status=${status}`);
   //       const data = await response.json();
   //       console.log("Fetched Orders:", data);
   //       setBookingData(data);

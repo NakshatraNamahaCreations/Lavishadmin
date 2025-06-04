@@ -18,7 +18,7 @@
 //         setLoading(true);
 
 //         try {
-//             const response = await axios.post("http://localhost:5000/api/admin/auth/login", { email, password }, { withCredentials: true })
+//             const response = await axios.post("https://api.lavisheventzz.com/api/admin/auth/login", { email, password }, { withCredentials: true })
 //             console.log(response)
 
 //             // Handling response status and setting access token
@@ -107,6 +107,7 @@ import bg from "../assets/login_bg.png";
 import axios from "axios"
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/authContext.jsx';
+import { getAuthAxios } from '../utils/api.js';
 
 const Login = ({ onLoginSuccess }) => {
     const [email, setEmail] = useState('');
@@ -122,7 +123,7 @@ const Login = ({ onLoginSuccess }) => {
       setLoading(true);
     
       try {
-        const response = await axios.post("http://localhost:5000/api/admin/auth/login", { email, password }, { withCredentials: true });
+        const response = await getAuthAxios().post("https://api.lavisheventzz.com/api/admin/auth/login", { email, password }, { withCredentials: true });
     
         if (response.status === 201) {
           const { accessToken, admin } = response.data;

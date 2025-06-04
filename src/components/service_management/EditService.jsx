@@ -49,7 +49,7 @@
 //     try {
 //       console.log("Fetching service with ID:", serviceId);
 //       const response = await fetch(
-//         `http://localhost:5000/api/services/${serviceId}`
+//         `https://api.lavisheventzz.com/api/services/${serviceId}`
 //       );
 //       const data = await response.json();
 
@@ -181,7 +181,7 @@
 
 //   const fetchCategories = async () => {
 //     try {
-//       const response = await axios.get("http://localhost:5000/api/categories/");
+//       const response = await axios.get("https://api.lavisheventzz.com/api/categories/");
 //       setCategories(response.data.data);
 //     } catch (error) {
 //       console.log("err", error.message);
@@ -193,7 +193,7 @@
 //     if (!selectedCategory) return;
 //     try {
 //       const response = await axios.get(
-//         `http://localhost:5000/api/subcategories/category/${selectedCategory}`
+//         `https://api.lavisheventzz.com/api/subcategories/category/${selectedCategory}`
 //       );
 //       setSubCategories(response.data.data);
 //     } catch (error) {
@@ -206,7 +206,7 @@
 //     if (!selectedSubCategory) return;
 //     try {
 //       const response = await axios.get(
-//         `http://localhost:5000/api/subsubcategories/subcategory/${selectedSubCategory}`
+//         `https://api.lavisheventzz.com/api/subsubcategories/subcategory/${selectedSubCategory}`
 //       );
 //       setSubSubCategories(response.data.data);
 //     } catch (error) {
@@ -219,7 +219,7 @@
 //     if (!selectedSubSubCategory) return;
 //     try {
 //       const response = await axios.get(
-//         `http://localhost:5000/api/themes/subsubCategory/${selectedSubSubCategory}`
+//         `https://api.lavisheventzz.com/api/themes/subsubCategory/${selectedSubSubCategory}`
 //       );
 //       setThemes(response.data.data);
 //       console.log("theme", response.data.data);
@@ -231,7 +231,7 @@
 
 //   const fetchBalloons = async () => {
 //     try {
-//       const res = await axios.get("http://localhost:5000/api/balloons/");
+//       const res = await axios.get("https://api.lavisheventzz.com/api/balloons/");
 //       setBalloons(res.data.data);
 //     } catch (error) {
 //       setError(error.message || "Something went wrong");
@@ -725,8 +725,8 @@ const EditService = () => {
   const fetchSubcategoriesByCategory = async () => {
     if (!selectedCategory) return;
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/subcategories/category/${selectedCategory}`
+      const response = await getAxios().get(
+        `https://api.lavisheventzz.com/api/subcategories/category/${selectedCategory}`
       );
       setSubCategories(response.data.data);
     } catch (error) {
@@ -738,8 +738,8 @@ const EditService = () => {
   const fetchSubsubcategoriesByCategory = async () => {
     if (!selectedSubCategory) return;
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/subsubcategories/subcategory/${selectedSubCategory}`
+      const response = await getAxios().get(
+        `https://api.lavisheventzz.com/api/subsubcategories/subcategory/${selectedSubCategory}`
       );
       setSubSubCategories(response.data.data);
     } catch (error) {
@@ -751,8 +751,8 @@ const EditService = () => {
   const fetchThemesBySubSubCategory = async () => {
     if (!selectedSubSubCategory) return;
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/themes/subsubCategory/${selectedSubSubCategory}`
+      const response = await getAxios().get(
+        `https://api.lavisheventzz.com/api/themes/subsubCategory/${selectedSubSubCategory}`
       );
       setThemes(response.data.data);
       console.log("theme", response.data.data);
@@ -814,7 +814,7 @@ const EditService = () => {
 
   const fetchServiceDetails = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/services/${serviceId}`);
+      const response = await fetch(`https://api.lavisheventzz.com/api/services/${serviceId}`);
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Failed to fetch service details");
       const serviceData = data.data;
