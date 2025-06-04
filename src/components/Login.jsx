@@ -123,7 +123,7 @@ const Login = ({ onLoginSuccess }) => {
       setLoading(true);
     
       try {
-        const response = await getAuthAxios().post("https://api.lavisheventzz.com/api/admin/auth/login", { email, password }, { withCredentials: true });
+        const response = await axios.post("https://api.lavisheventzz.com/api/admin/auth/login", { email, password }, { withCredentials: true });
     
         if (response.status === 201) {
           const { accessToken, admin } = response.data;
