@@ -12,7 +12,7 @@ const Enquiry = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const limit = 5;
+  const limit = 10;
 
   // Fetch enquiries based on current page and search value
   const fetchEnquiries = async () => {
@@ -62,52 +62,56 @@ const Enquiry = () => {
         </button>
       </div>
       <div className="overflow-x-auto bg-white p-6 rounded-lg shadow-md">
-        <table className="min-w-full table-auto border-collapse text-sm">
-          <thead>
-            <tr className="border-b bg-gray-100">
-              <th className="px-4 py-2 text-left">SI No.</th>
-              <th className="px-4 py-2 text-left">Name</th>
-              <th className="px-4 py-2 text-left">Phone</th>
-              <th className="px-4 py-2 text-left">Email</th>
-              <th className="px-4 py-2 text-left">Service</th>
-              <th className="px-4 py-2 text-left">Message</th>
-              {/* <th className="px-4 py-2 text-left">Status</th> */}
-            </tr>
-          </thead>
-          <tbody>
-            {enquiries.map((enq, idx) => (
-              <tr key={enq._id} className="border-b">
-                <td className="px-4 py-2">{(currentPage - 1) * limit + idx + 1}</td>
-                <td className="px-4 py-2">{enq.name}</td>
-                <td className="px-4 py-2">{enq.phone}</td>
-                <td className="px-4 py-2">{enq.email}</td>
-                <td className="px-4 py-2">{enq.service}</td>
-                <td className="px-4 py-2">{enq.message}</td>
-                {/* <td className="px-4 py-2">
-                  <select
-                    value={enq.status || ""}
-                    onChange={(e) => handleStatusChange(enq._id, e.target.value)}
-                    className="border px-2 py-1 rounded"
-                  >
-                    <option value="">Select Status</option>
-                    {statusOptions.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                </td> */}
+        {loading ? (
+          <div className="flex justify-center items-center my-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2 text-blue-600">Loading...</span>
+          </div>
+        ) : enquiries.length > 0 ? (
+          <table className="min-w-full table-auto border-collapse text-sm">
+            <thead>
+              <tr className="border-b bg-gray-100">
+                <th className="px-4 py-2 text-left">SI No.</th>
+                <th className="px-4 py-2 text-left">Name</th>
+                <th className="px-4 py-2 text-left">Phone</th>
+                <th className="px-4 py-2 text-left">Email</th>
+                <th className="px-4 py-2 text-left">Service</th>
+                <th className="px-4 py-2 text-left">Message</th>
+                {/* <th className="px-4 py-2 text-left">Status</th> */}
               </tr>
-            ))}
-            {!loading && enquiries.length === 0 && (
-              <tr>
-                <td colSpan="7" className="text-center py-4">
-                  No enquiries found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {enquiries.map((enq, idx) => (
+                <tr key={enq._id} className="border-b">
+                  <td className="px-4 py-2">{(currentPage - 1) * limit + idx + 1}</td>
+                  <td className="px-4 py-2">{enq.name}</td>
+                  <td className="px-4 py-2">{enq.phone}</td>
+                  <td className="px-4 py-2">{enq.email}</td>
+                  <td className="px-4 py-2">{enq.service}</td>
+                  <td className="px-4 py-2">{enq.message}</td>
+                  {/* <td className="px-4 py-2">
+                    <select
+                      value={enq.status || ""}
+                      onChange={(e) => handleStatusChange(enq._id, e.target.value)}
+                      className="border px-2 py-1 rounded"
+                    >
+                      <option value="">Select Status</option>
+                      {statusOptions.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  </td> */}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <p className="text-lg">No enquiries found.</p>
+          </div>
+        )}
       </div>
 
       <Pagination

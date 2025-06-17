@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
-import axios from "axios";
 import { getAuthAxios, getAxios } from "../../../utils/api";
 import { IoEyeSharp } from "react-icons/io5";
 import Pagination from "../../Pagination";
@@ -16,7 +15,7 @@ const AddonsList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
-  const limit = 5;
+  const limit = 10;
 
   const handleSearch = (e) => {
     setSearchVal(e.target.value);
@@ -36,7 +35,6 @@ const AddonsList = () => {
 
       setAddonsList(data || []);
       setTotalPages(pagination?.totalPages || 1);
-      setCurrentPage(pagination?.currentPage || 1);
     } catch (err) {
       console.error("Error fetching addons:", err);
       setError("Failed to fetch addons.");
@@ -91,8 +89,11 @@ const AddonsList = () => {
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Addons List</h2>
         {error && <p className="text-red-600 mb-4">{error}</p>}
         {loading ? (
-          <p>Loading...</p>
-        ) : (
+          <div className="flex justify-center items-center my-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2 text-blue-600">Loading...</span>
+          </div>
+        ) : addonsList.length > 0 ? (
           <table className="min-w-full border-collapse border border-gray-300 text-sm">
             <thead className="bg-gray-200">
               <tr>
@@ -105,55 +106,51 @@ const AddonsList = () => {
               </tr>
             </thead>
             <tbody>
-              {addonsList.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="text-center py-4 text-gray-500">
-                    Addons not found.
+              {addonsList.map((addon) => (
+                <tr key={addon._id} className="text-center">
+                  <td className="border px-4 py-2">{addon.subCategory}</td>
+                  <td className="border px-4 py-2">{addon.addonsName}</td>
+                  <td className="border px-4 py-2">
+                    <img src={`${addon.image}`} className="w-20 h-20" />
+                  </td>
+                  <td className="border px-4 py-2">{addon.price}</td>
+                  <td className="border px-4 py-2" dangerouslySetInnerHTML={{ __html: addon.addonsDescription }} />
+                  <td>
+                    <td className="border px-4 py-2">
+                      <div className="flex justify-center gap-2">
+                        <button
+                          className="text-blue-600 hover:text-gray-800 transition"
+                          onClick={() =>
+                            navigate(`/addons/view-details/${addon._id}`)
+                          }
+                        >
+                          <IoEyeSharp size={18} />
+                        </button>
+                        <button
+                          onClick={() =>
+                            navigate(`/addons/editAddons/${addon._id}`)
+                          }
+                          className="text-gray-600 hover:text-gray-800 transition"
+                        >
+                          <FiEdit size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(addon._id)}
+                          className="text-red-600 hover:text-red-800 transition"
+                        >
+                          <FiTrash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
                   </td>
                 </tr>
-              ) : (
-                addonsList.map((addon) => (
-                  <tr key={addon._id} className="text-center">
-                    <td className="border px-4 py-2">{addon.subCategory}</td>
-                    <td className="border px-4 py-2">{addon.addonsName}</td>
-                    <td className="border px-4 py-2">
-                      <img src={`${addon.image}`} className="w-20 h-20" />
-                    </td>
-                    <td className="border px-4 py-2">{addon.price}</td>
-                    <td className="border px-4 py-2" dangerouslySetInnerHTML={{ __html: addon.addonsDescription }} />
-                    <td>
-                      <td className="border px-4 py-2">
-                        <div className="flex justify-center gap-2">
-                          <button
-                            className="text-blue-600 hover:text-gray-800 transition"
-                            onClick={() =>
-                              navigate(`/addons/view-details/${addon._id}`)
-                            }
-                          >
-                            <IoEyeSharp size={18} />
-                          </button>
-                          <button
-                            onClick={() =>
-                              navigate(`/addons/editAddons/${addon._id}`)
-                            }
-                            className="text-gray-600 hover:text-gray-800 transition"
-                          >
-                            <FiEdit size={16} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(addon._id)}
-                            className="text-red-600 hover:text-red-800 transition"
-                          >
-                            <FiTrash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <p className="text-lg">No addons found.</p>
+          </div>
         )}
         <Pagination
           currentPage={currentPage}

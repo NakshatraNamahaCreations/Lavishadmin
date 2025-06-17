@@ -8,28 +8,13 @@ import { getAxios } from "../../utils/api";
 const BigCalendar = () => {
   const navigate = useNavigate();
   const [bookingData, setBookingData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const localizer = momentLocalizer(moment);
 
-  // Fetch order data from API
-  // useEffect(() => {
-  //   const fetchOrders = async () => {
-  //     try {
-  //       const status = "created"; // You can also make this dynamic via props or state
-  //       const response = await fetch(`https://api.lavisheventzz.com/api/orders?status=${status}`);
-  //       const data = await response.json();
-  //       console.log("Fetched Orders:", data);
-  //       setBookingData(data);
-  //     } catch (error) {
-  //       console.error("Error fetching orders:", error);
-  //     }
-  //   };
-
-  //   fetchOrders();
-  // }, []);
-
-  useEffect(() => {
+   useEffect(() => {
     const fetchOrders = async () => {
+      setLoading(true);
       try {
         const status = "created"; // You can also make this dynamic via props or state
         const response = await getAxios().get(`/orders/`, {
@@ -39,6 +24,8 @@ const BigCalendar = () => {
         setBookingData(response.data);
       } catch (error) {
         console.error("Error fetching orders:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -76,17 +63,24 @@ const BigCalendar = () => {
         Booking Calendar
       </h2>
       <div className="bg-white shadow-lg rounded-lg p-4">
-        <Calendar
-          localizer={localizer}
-          events={eventCounts}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 500 }}
-          defaultView="month"
-          views={["month", "week", "day"]}
-          popup
-          onSelectEvent={handleEventClick} // Trigger the event handler on click
-        />
+        {loading ? (
+          <div className="flex justify-center items-center my-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2 text-blue-600">Loading...</span>
+          </div>
+        ) : (
+          <Calendar
+            localizer={localizer}
+            events={eventCounts}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: 500 }}
+            defaultView="month"
+            views={["month", "week", "day"]}
+            popup
+            onSelectEvent={handleEventClick} // Trigger the event handler on click
+          />
+        )}
       </div>
     </div>
   );

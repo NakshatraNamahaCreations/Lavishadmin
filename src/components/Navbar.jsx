@@ -1,88 +1,7 @@
-// import React from 'react';
-// import { FaSearch, FaUserCircle } from 'react-icons/fa';
-// import { IoLogOut } from "react-icons/io5";
-// import { RiMenu2Line } from "react-icons/ri";
-// import axios from "axios"
-// import { useNavigate } from 'react-router-dom';
-// import { useAuth } from '../utils/authContext.jsx';
-
-// const Navbar = ({ setOpenSidebar, onLogout }) => {
-//   const navigate = useNavigate();
-//   const { logout } = useAuth();
-
-//   const handleLogout = async () => {
-//     try {
-//       const token = sessionStorage.getItem("accessToken");
-//       if (!token) {
-//         // If token is already missing, just clean up and redirect
-//         sessionStorage.removeItem("accessToken");
-//         logout(); // Use context logout
-//         if (onLogout) {
-//           onLogout();
-//         }
-//         navigate("/login");
-//         return;
-//       }
-
-//       try {
-//         // Try to call the logout endpoint
-//         const response = await axios.post("https://api.lavisheventzz.com/api/admin/auth/logout", {},
-//           {
-//             headers: {
-//               Authorization: `Bearer ${token}`,
-//             }
-//           });
-
-//         console.log("Logout successful:", response.data);
-//       } catch (apiError) {
-//         // Even if the server logout fails, we'll continue with client-side logout
-//         console.error("Logout API error:", apiError.message);
-//       } finally {
-//         // Always remove token and redirect regardless of API success
-//         sessionStorage.removeItem("accessToken");
-//         logout(); // Use context logout
-//         if (onLogout) {
-//           onLogout();
-//         }
-//         navigate("/login");
-//       }
-//     } catch (error) {
-//       console.error("Logout error:", error);
-//       // Failsafe: make sure we handle any unexpected errors by still clearing state
-//       sessionStorage.removeItem("accessToken");
-//       logout(); // Use context logout
-//       if (onLogout) {
-//         onLogout();
-//       }
-//       navigate("/login");
-//     }
-//   }
-
-//   return (
-//     <div className="bg-white p-4 shadow-md flex justify-between items-center relative md:w-auto ">
-//       <div className='absolute top-4 left-2 block md:hidden ' onClick={() => setOpenSidebar(true)}>
-//         <RiMenu2Line size={30} />
-//       </div>
-
-//       <div className="flex items-center space-x-4 md:mx-0 mx-8  cursor-pointer">
-//         <FaUserCircle className="text-2xl text-gray-600" />
-//         <span className="text-gray-600">Admin</span>
-//       </div>
-//       <div className="flex items-center gap-1  cursor-pointer" onClick={handleLogout}>
-//         <IoLogOut className="text-2xl text-gray-600 cursor-pointer" />
-//         <span className="text-gray-600">Logout</span>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Navbar;
-
 import React from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import { IoLogOut } from "react-icons/io5";
 import { RiMenu2Line } from "react-icons/ri";
-import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/authContext.jsx';
 import { getAuthAxios } from '../utils/api.js';
@@ -92,11 +11,15 @@ const Navbar = ({ setOpenSidebar, onLogout }) => {
   const { logout, currentAdmin } = useAuth(); // ✅ Added currentAdmin
 
   const handleLogout = async () => {
+    // Show confirmation dialog
+    const confirmed = window.confirm("Are you sure you want to logout?");
+    if (!confirmed) return; // If user cancels, do nothing
+
     try {
       const token = sessionStorage.getItem("accessToken");
 
       try {
-        await getAuthAxios().post("https://api.lavisheventzz.com/api/admin/auth/logout", {}, {
+        await getAuthAxios().post("/admin/auth/logout", {}, {
           headers: { Authorization: `Bearer ${token}` }
         });
       } catch (apiError) {

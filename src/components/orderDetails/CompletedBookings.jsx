@@ -1,10 +1,8 @@
-
 import { useEffect, useState } from "react";
 import { MdOutlineCurrencyRupee } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { IoArrowBack, IoEyeSharp } from "react-icons/io5";
-import axios from "axios";
-import Pagination from "../Pagination"; // Ensure this is correctly imported
+import Pagination from "../Pagination"; 
 import { getAxios } from "../../utils/api";
 
 const CompletedBookings = () => {
@@ -12,14 +10,14 @@ const CompletedBookings = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchVal, setSearchVal] = useState("");
-  const [searchInput, setSearchInput] = useState(""); // Holds typed value
+  const [searchInput, setSearchInput] = useState(""); 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const limit = 5; // Pagination limit
+  const limit = 10; 
 
   const navigate = useNavigate();
 
-  // Fetch cancelled orders based on search term, pagination, and status
+  // Fetch completed orders based on search term, pagination, and status
   useEffect(() => {
     const fetchOrders = async () => {
       setLoading(true);
@@ -38,7 +36,7 @@ const CompletedBookings = () => {
         setOrderData(response.data.orders);
         setTotalPages(response.data.totalPages);
       } catch (err) {
-        setError("Error fetching cancelled bookings.");
+        setError("Error fetching completed bookings.");
       } finally {
         setLoading(false);
       }
@@ -47,24 +45,19 @@ const CompletedBookings = () => {
     fetchOrders();
   }, [searchVal, currentPage]);
   
-  const handleSearch = (e) => {
-    setSearchVal(e.target.value);
-    setCurrentPage(1); // Reset page to 1 whenever search text changes
-  };
-
   const handlePageChange = (page) => {
-    setCurrentPage(page); // Update the page when pagination is used
+    setCurrentPage(page);
   };
 
   const handleBackClick = () => {
-    navigate(-1); // Navigate back to the previous page
+    navigate(-1);
   };
 
   const formatDate = (date) => {
     const d = new Date(date);
     const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0'); // Get month and pad with leading zero if needed
-    const day = String(d.getDate()).padStart(2, '0'); // Get day and pad with leading zero if needed
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
 
@@ -91,43 +84,44 @@ const CompletedBookings = () => {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
           />
-
           <button
             className="bg-yellow-500 text-white px-4 py-2 rounded-md"
             onClick={() => {
-              setSearchVal(searchInput); // Triggers the actual search
-              setCurrentPage(1); // Resets to first page
+              setSearchVal(searchInput);
+              setCurrentPage(1);
             }}
           >
             Search
           </button>
-
         </div>
       </div>
 
       {/* Error and Loading States */}
       {error && <p className="text-red-600">{error}</p>}
-      {loading && <p>Loading...</p>}
 
-      {/* Table displaying cancelled orders */}
       <div className="overflow-x-auto bg-white p-3 rounded-lg shadow-md">
-        <table className="min-w-full table-auto border-collapse text-sm">
-          <thead>
-            <tr className="border-b bg-gray-100">
-              <th className="px-4 py-2 text-left">SI No.</th>
-              <th className="px-4 py-2 text-left">Order Id</th>
-              <th className="px-4 py-2 text-left">Customer Name</th>
-              <th className="px-4 py-2 text-left">Event Date</th>
-              <th className="px-4 py-2 text-left">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* Display order data */}
-            {orderData?.length > 0 ? (
-              orderData.map((order, index) => (
+        {loading ? (
+          <div className="flex justify-center items-center my-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2 text-blue-600">Loading...</span>
+          </div>
+        ) : orderData.length > 0 ? (
+          <table className="min-w-full table-auto border-collapse text-sm">
+            <thead>
+              <tr className="border-b bg-gray-100">
+                <th className="px-4 py-2 text-left">SI No.</th>
+                <th className="px-4 py-2 text-left">Order Id</th>
+                <th className="px-4 py-2 text-left">Customer Name</th>
+                <th className="px-4 py-2 text-left">Event Date</th>
+                <th className="px-4 py-2 text-left">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orderData.map((order, index) => (
                 <tr key={order._id} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-2 font-bold">
-                    {(currentPage - 1) * limit + index + 1}
+                    {/* {(currentPage - 1) * limit + index + 1} */}
+                    {index + 1}
                   </td>
                   <td className="px-4 py-2">{order.orderId}</td>
                   <td className="px-4 py-2">{order.customerName}</td>
@@ -136,25 +130,25 @@ const CompletedBookings = () => {
                     <Link to={`/orderdetails/details/${order._id}`}>  <IoEyeSharp size={18} /></Link>
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6" className="text-center py-4">
-                  No cancelled bookings found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <p className="text-lg">No completed bookings found.</p>
+          </div>
+        )}
       </div>
 
-      {/* Pagination */}
+      {/* Pagination below the table, centered */}
       {totalPages > 1 && (
-        <Pagination
-          totalPages={totalPages}
-          currentPage={currentPage}
-          handlePageChange={handlePageChange}
-        />
+        <div className="mt-4 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
       )}
     </div>
   );

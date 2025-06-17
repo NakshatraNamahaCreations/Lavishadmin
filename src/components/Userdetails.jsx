@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -15,7 +14,7 @@ const Userdetails = () => {
   const [error, setError] = useState("");
   const [totalPages, setTotalPages] = useState(0);
 
-  const limit = 5;
+  const limit = 10;
   const navigate = useNavigate();
   const authAxios = getAuthAxios()
 
@@ -106,61 +105,64 @@ const Userdetails = () => {
           </button>
         </div>
         <div className="overflow-x-auto bg-white p-6 rounded-lg shadow-md">
-          <table className="min-w-full table-auto border-collapse text-sm">
-            <thead>
-              <tr className="border-b bg-gray-100">
-                <th className="px-4 py-2 text-left">SI No.</th>
-                <th className="px-4 py-2 text-left">First Name</th>
-                <th className="px-4 py-2 text-left">Last Name</th>
-                <th className="px-4 py-2 text-left">Email</th>
-                <th className="px-4 py-2 text-left">Mobile No</th>
-                <th className="px-4 py-2 text-left">City</th>
-                <th className="px-4 py-2 text-left">Pincode</th>
-                <th className="px-4 py-2 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item, idx) => (
-                <tr
-                  key={item._id}
-                  onClick={() => handleRowClick(item._id)}
-                  className="border-b hover:bg-gray-50"
-                >
-                  <td className="px-4 py-2 font-bold">{idx + 1}</td>
-                  <td className="px-4 py-2">{item.firstName || "-"}</td>
-                  <td className="px-4 py-2">{item.lastName || "-"}</td>
-                  <td className="px-4 py-2">{item.email || "-"}</td>
-                  <td className="px-4 py-2">{item.mobile || "-"}</td>
-                  <td className="px-4 py-2">{item.city || "-"}</td>
-                  <td className="px-4 py-2">{item.pincode || "-"}</td>
-                  <td className="border border-gray-300 py-2 w-[10%]">
-                    <div className="flex justify-center gap-2">
-                      <button
-                        className="text-blue-600 hover:text-gray-800 transition"
-                        onClick={() => handleRowClick(item._id)}
-                      >
-                        <IoEyeSharp size={18} />
-                      </button>
-                      <button
-                        className="text-red-600 hover:text-red-800 transition"
-                        onClick={(e) => handleDelete(item._id, e)}
-                      >
-                        <FiTrash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
+          {loading ? (
+            <div className="flex justify-center items-center my-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="ml-2 text-blue-600">Loading...</span>
+            </div>
+          ) : data.length > 0 ? (
+            <table className="min-w-full table-auto border-collapse text-sm">
+              <thead>
+                <tr className="border-b bg-gray-100">
+                  <th className="px-4 py-2 text-left">SI No.</th>
+                  <th className="px-4 py-2 text-left">First Name</th>
+                  <th className="px-4 py-2 text-left">Last Name</th>
+                  <th className="px-4 py-2 text-left">Email</th>
+                  <th className="px-4 py-2 text-left">Mobile No</th>
+                  <th className="px-4 py-2 text-left">City</th>
+                  <th className="px-4 py-2 text-left">Pincode</th>
+                  <th className="px-4 py-2 text-left">Actions</th>
                 </tr>
-              ))}
-
-              {!loading && data.length === 0 && (
-                <tr>
-                  <td colSpan="8" className="text-center py-4">
-                    No data found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {data.map((item, idx) => (
+                  <tr
+                    key={item._id}
+                   
+                    className="border-b hover:bg-gray-50"
+                  >
+                    <td className="px-4 py-2 font-bold">{idx + 1}</td>
+                    <td className="px-4 py-2">{item.firstName || "-"}</td>
+                    <td className="px-4 py-2">{item.lastName || "-"}</td>
+                    <td className="px-4 py-2">{item.email || "-"}</td>
+                    <td className="px-4 py-2">{item.mobile || "-"}</td>
+                    <td className="px-4 py-2">{item.city || "-"}</td>
+                    <td className="px-4 py-2">{item.pincode || "-"}</td>
+                    <td className="border border-gray-300 py-2 w-[10%]">
+                      <div className="flex justify-center gap-2">
+                        <button
+                          className="text-blue-600 hover:text-gray-800 transition"
+                          onClick={() => handleRowClick(item._id)}
+                        >
+                          <IoEyeSharp size={18} />
+                        </button>
+                        <button
+                          className="text-red-600 hover:text-red-800 transition"
+                          onClick={(e) => handleDelete(item._id, e)}
+                        >
+                          <FiTrash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <p className="text-lg">No users found.</p>
+            </div>
+          )}
         </div>
         {/* Reusable Pagination Component */}
 

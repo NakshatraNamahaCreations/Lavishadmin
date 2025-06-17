@@ -30,7 +30,7 @@ const Dashboard = () => {
 
     const fetchServiceCount = async () => {
       try {
-        const res = await getAxios().get("https://api.lavisheventzz.com/api/services/getCount");
+        const res = await getAxios().get("/services/getCount");
         console.log("ServiceCount", res.data);
         setServiceCount(res.data.count || 0);
       } catch (error) {
@@ -52,7 +52,7 @@ const Dashboard = () => {
 
     const fetchOrderCount = async () => {
       try {
-        const res = await getAxios().get("https://api.lavisheventzz.com/api/orders/getCount");
+        const res = await getAxios().get("/orders/getCount");
         console.log("OrderCount", res.data);
         setOrderCount(res.data.count || 0);
       } catch (error) {

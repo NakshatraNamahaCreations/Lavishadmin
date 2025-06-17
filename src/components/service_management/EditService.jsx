@@ -726,7 +726,7 @@ const EditService = () => {
     if (!selectedCategory) return;
     try {
       const response = await getAxios().get(
-        `https://api.lavisheventzz.com/api/subcategories/category/${selectedCategory}`
+        `/subcategories/category/${selectedCategory}`
       );
       setSubCategories(response.data.data);
     } catch (error) {
@@ -739,7 +739,7 @@ const EditService = () => {
     if (!selectedSubCategory) return;
     try {
       const response = await getAxios().get(
-        `https://api.lavisheventzz.com/api/subsubcategories/subcategory/${selectedSubCategory}`
+        `/subsubcategories/subcategory/${selectedSubCategory}`
       );
       setSubSubCategories(response.data.data);
     } catch (error) {
@@ -752,7 +752,7 @@ const EditService = () => {
     if (!selectedSubSubCategory) return;
     try {
       const response = await getAxios().get(
-        `https://api.lavisheventzz.com/api/themes/subsubCategory/${selectedSubSubCategory}`
+        `/themes/subsubCategory/${selectedSubSubCategory}`
       );
       setThemes(response.data.data);
       console.log("theme", response.data.data);

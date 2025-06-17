@@ -2,21 +2,20 @@ import { useEffect, useState } from "react";
 import { MdOutlineCurrencyRupee } from "react-icons/md";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { IoArrowBack, IoEyeSharp } from "react-icons/io5";
-import axios from "axios";
 import Pagination from "../Pagination";
 import { getAxios } from "../../utils/api";
 
 const Bookingdetails = () => {
-  const { date } = useParams(); // Extract date from URL params
+  const { date } = useParams(); 
   const [orderData, setOrderData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchVal, setSearchVal] = useState("");
-  const [searchInput, setSearchInput] = useState(""); // For typing
+  const [searchInput, setSearchInput] = useState(""); 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
-  const limit = 5; // Number of orders per page
+  const limit = 10; 
   const navigate = useNavigate();
 
   // Fetch orders based on the date, search term, and pagination
@@ -27,7 +26,7 @@ const Bookingdetails = () => {
         const response = await getAxios().get(`/orders/getordersbystatus/`, {
           params: {
             eventDate: date,
-            search: searchVal, // <-- This only updates when button is clicked
+            search: searchVal, 
             page: currentPage,
             limit: limit,
             status: "created"
@@ -47,12 +46,12 @@ const Bookingdetails = () => {
   }, [date, searchVal, currentPage]);
 
   const handlePageChange = (page) => {
-    setCurrentPage(page); // Update the current page
+    setCurrentPage(page); 
   };
 
 
   const handleBackClick = () => {
-    navigate(-1); // Navigate back to the previous route
+    navigate(-1); 
   };
 
   return (
@@ -89,26 +88,29 @@ const Bookingdetails = () => {
       </div>
 
       {/* Loading and Error Handling */}
-      {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
+      {error && <p className="text-red-600">{error}</p>}
 
-      {/* Display Order Data */}
       <div className="overflow-x-auto bg-white p-3 rounded-lg shadow-md">
-        <table className="min-w-full table-auto border-collapse text-sm">
-          <thead>
-            <tr className="border-b bg-gray-100">
-              <th className="px-4 py-2 text-left cursor-pointer">SI No.</th>
-              <th className="px-4 py-2 text-left cursor-pointer">Order Id</th>
-              <th className="px-4 py-2 text-left cursor-pointer">Cust. name</th>
-              <th className="px-4 py-2 text-left cursor-pointer">Event Date</th>
-              <th className="px-4 py-2 text-left cursor-pointer">Total Amount</th>
-              <th className="px-4 py-2 text-left cursor-pointer">Status</th>
-              <th className="px-4 py-2 text-left cursor-pointer">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orderData && orderData.length > 0 ? (
-              orderData.map((order, index) => (
+        {loading ? (
+          <div className="flex justify-center items-center my-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2 text-blue-600">Loading...</span>
+          </div>
+        ) : orderData && orderData.length > 0 ? (
+          <table className="min-w-full table-auto border-collapse text-sm">
+            <thead>
+              <tr className="border-b bg-gray-100">
+                <th className="px-4 py-2 text-left cursor-pointer">SI No.</th>
+                <th className="px-4 py-2 text-left cursor-pointer">Order Id</th>
+                <th className="px-4 py-2 text-left cursor-pointer">Cust. name</th>
+                <th className="px-4 py-2 text-left cursor-pointer">Event Date</th>
+                <th className="px-4 py-2 text-left cursor-pointer">Total Amount</th>
+                <th className="px-4 py-2 text-left cursor-pointer">Status</th>
+                <th className="px-4 py-2 text-left cursor-pointer">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orderData.map((order, index) => (
                 <tr key={order._id} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-2 font-bold">{index + 1}</td>
                   <td className="px-4 py-2">{order.orderId}</td>
@@ -123,24 +125,26 @@ const Bookingdetails = () => {
                     <Link to={`/orderdetails/details/${order._id}`}>  <IoEyeSharp size={18} /></Link>
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="8" className="text-center px-4 py-2">
-                  No orders found for this date
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <p className="text-lg">No orders found for this date</p>
+          </div>
+        )}
       </div>
 
       {/* Pagination */}
-      {totalPages > 1 && <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        handlePageChange={handlePageChange}
-      />}
+      {totalPages > 1 && (
+        <div className="mt-4 flex justify-center">
+          <Pagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
 
     </div>
   );

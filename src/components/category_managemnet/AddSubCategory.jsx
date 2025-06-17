@@ -217,23 +217,28 @@ const AddSubCategory = () => {
 
         {/* Subcategories Table */}
         <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
-          <table className="w-full border-collapse border border-gray-300 text-sm">
-            <thead className="sticky top-0 bg-gray-200 z-10">
-              <tr>
-                <th className="border border-gray-300 px-4 py-2 text-left">
-                  Category
-                </th>
-                <th className="border border-gray-300 px-4 py-2 text-left">
-                  Sub Category
-                </th>
-                <th className="border border-gray-300 px-4 py-2 text-center">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.length > 0 ? (
-                filteredData.map((item) => (
+          {loading ? (
+            <div className="flex justify-center items-center my-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="ml-2 text-blue-600">Loading...</span>
+            </div>
+          ) : filteredData.length > 0 ? (
+            <table className="w-full border-collapse border border-gray-300 text-sm">
+              <thead className=" top-0 bg-gray-200 z-10">
+                <tr>
+                  <th className="border border-gray-300 px-4 py-2 text-left">
+                    Category
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2 text-left">
+                    Sub Category
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2 text-center">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.map((item) => (
                   <tr
                     className={`${
                       currentSubCategoryId === item._id
@@ -265,16 +270,14 @@ const AddSubCategory = () => {
                       </div>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={3} className="text-center text-gray-500 py-4">
-                    No sub-categories to display.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <p className="text-lg">No sub-categories found.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

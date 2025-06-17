@@ -53,7 +53,6 @@ const RescheduledBookings = () => {
     fetchOrders();
   }, [searchVal, currentPage]);
 
-
   const handleSearch = (e) => {
     setSearchVal(e.target.value);
     setCurrentPage(1);
@@ -97,32 +96,36 @@ const RescheduledBookings = () => {
           >
             Search
           </button>
-
         </div>
       </div>
 
       {error && <p className="text-red-600">{error}</p>}
-      {loading && <p>Loading...</p>}
 
       <div className="overflow-x-auto bg-white p-3 rounded-lg shadow-md">
-        <table className="min-w-full table-auto border-collapse text-sm">
-          <thead>
-            <tr className="border-b bg-gray-100">
-              <th className="px-4 py-2 text-left">SI No.</th>
-              <th className="px-4 py-2 text-left">Order Id</th>
-              <th className="px-4 py-2 text-left">Customer Name</th>
-              <th className="px-4 py-2 text-left">Original Date</th>
-              <th className="px-4 py-2 text-left">Rescheduled  Date</th>
-              <th className="px-4 py-2 text-left">Rescheduled Reason</th>
-              <th className="px-4 py-2 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orderData?.length > 0 ? (
-              orderData.map((order, index) => (
+        {loading ? (
+          <div className="flex justify-center items-center my-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2 text-blue-600">Loading...</span>
+          </div>
+        ) : orderData.length > 0 ? (
+          <table className="min-w-full table-auto border-collapse text-sm">
+            <thead>
+              <tr className="border-b bg-gray-100">
+                <th className="px-4 py-2 text-left">SI No.</th>
+                <th className="px-4 py-2 text-left">Order Id</th>
+                <th className="px-4 py-2 text-left">Customer Name</th>
+                <th className="px-4 py-2 text-left">Original Date</th>
+                <th className="px-4 py-2 text-left">Rescheduled  Date</th>
+                <th className="px-4 py-2 text-left">Rescheduled Reason</th>
+                <th className="px-4 py-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orderData.map((order, index) => (
                 <tr key={order._id} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-2 font-bold">
-                    {(currentPage - 1) * limit + index + 1}
+                    {/* {(currentPage - 1) * limit + index + 1} */}
+                    {index + 1}
                   </td>
                   <td className="px-4 py-2">{order.orderId}</td>
                   <td className="px-4 py-2">{order.customerName}</td>
@@ -133,24 +136,25 @@ const RescheduledBookings = () => {
                     <Link to={`/orderdetails/details/${order._id}`}>  <IoEyeSharp size={18} /></Link>
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6" className="text-center py-4">
-                  No rescheduled bookings found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <p className="text-lg">No rescheduled bookings found.</p>
+          </div>
+        )}
       </div>
 
+      {/* Pagination below the table, centered */}
       {totalPages > 1 && (
-        <Pagination
-          totalPages={totalPages}
-          currentPage={currentPage}
-          handlePageChange={handlePageChange}
-        />
+        <div className="mt-4 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
       )}
     </div>
   );

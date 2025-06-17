@@ -92,7 +92,10 @@ const ServiceList = () => {
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Service List</h2>
         {error && <p className="text-red-600 mb-4">{error}</p>}
         {loading ? (
-          <p>Loading...</p>
+          <div className="flex justify-center items-center my-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2 text-blue-600">Loading...</span>
+          </div>
         ) : (
           <table className="w-full border-collapse border border-gray-300 text-sm">
             <thead>

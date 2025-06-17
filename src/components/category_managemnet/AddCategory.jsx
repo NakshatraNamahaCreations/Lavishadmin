@@ -9,6 +9,8 @@ const AddCategory = () => {
   const [editIndex, setEditIndex] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [addingLoading, setAddingLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const toTitleCase = (str) => {
     return str
@@ -20,12 +22,12 @@ const AddCategory = () => {
 
   const handleAddCategory = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setAddingLoading(true);
     setError("");
 
     if (!category.trim()) {
       alert("Category name cannot be empty");
-      setLoading(false);
+      setAddingLoading(false);
       return;
     }
 
@@ -34,7 +36,7 @@ const AddCategory = () => {
 
       if (!getAuthToken()) {
         setError("You must be logged in to add categories");
-        setLoading(false);
+        setAddingLoading(false);
         return;
       }
 
@@ -46,11 +48,11 @@ const AddCategory = () => {
       console.log("err", error);
       setError(
         error?.response?.data?.message ||
-          error.message ||
-          "Something went wrong"
+        error.message ||
+        "Something went wrong"
       );
     } finally {
-      setLoading(false);
+      setAddingLoading(false);
     }
   };
 
@@ -73,17 +75,22 @@ const AddCategory = () => {
   const handleDelete = async (id) => {
     try {
       const authAxios = getAuthAxios();
+      if (window.confirm("Are you sure you want to delete this category?")) {
+        if (!getAuthToken()) {
+          setError("You must be logged in to delete categories");
+          return;
+        }
 
-      if (!getAuthToken()) {
-        setError("You must be logged in to delete categories");
-        return;
+        setDeletingId(id);
+        const response = await authAxios.delete(`/categories/delete/${id}`);
+        fetchCategories();
       }
 
-      const response = await authAxios.delete(`/categories/delete/${id}`);
-      fetchCategories();
     } catch (error) {
       console.log("err", error.message);
       setError("Something went wrong");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -114,7 +121,7 @@ const AddCategory = () => {
               type="submit"
               className={` bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-md transition-all cursor-pointer`}
             >
-              {loading ? "Adding..." : "Add "}
+              {addingLoading ? "Adding..." : "Add "}
             </button>
           </div>
         </form>
@@ -125,9 +132,14 @@ const AddCategory = () => {
           <h3 className="text-lg font-semibold text-gray-700 mb-4">
             Categories
           </h3>
-          <ul className="space-y-3">
-            {categories && categories.length > 0 ? (
-              categories.map((cat) => (
+          {loading ? (
+            <div className="flex justify-center items-center my-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="ml-2 text-blue-600">Loading...</span>
+            </div>
+          ) : categories && categories.length > 0 ? (
+            <ul className="space-y-3">
+              {categories.map((cat) => (
                 <li
                   key={cat._id}
                   className="flex items-center justify-between px-4 py-3 bg-gray-50 border border-gray-200 rounded-md shadow-sm"
@@ -139,16 +151,23 @@ const AddCategory = () => {
                     <button
                       onClick={() => handleDelete(cat._id)}
                       className="text-red-600 hover:text-red-800 transition"
+                      disabled={deletingId === cat._id}
                     >
-                      <FiTrash2 size={16} />
+                      {deletingId === cat._id ? (
+                        <span className="text-sm">Deleting...</span>
+                      ) : (
+                        <FiTrash2 size={16} />
+                      )}
                     </button>
                   </div>
                 </li>
-              ))
-            ) : (
-              <li className="text-center">No Category Found</li>
-            )}
-          </ul>
+              ))}
+            </ul>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <p className="text-lg">No categories found.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

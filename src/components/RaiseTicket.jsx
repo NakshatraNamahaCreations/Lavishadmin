@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Pagination from "./Pagination";
-import { getAxios } from "../utils/api"; // Make sure this returns an axios instance
-
-const statusOptions = ["Interested", "Not Interested", "Pending", "Follow Up"];
+import { getAxios } from "../utils/api"; 
 
 const RaiseTicket = () => {
   const [enquiries, setEnquiries] = useState([]);
@@ -63,36 +60,43 @@ const RaiseTicket = () => {
       </div>
 
       <div className="overflow-x-auto bg-white p-6 rounded-lg shadow-md">
-        <table className="min-w-full table-auto border-collapse text-sm">
-          <thead>
-            <tr className="border-b bg-gray-100">
-              <th className="px-4 py-2 text-left">SI No.</th>
-              <th className="px-4 py-2 text-left">Order ID</th>
-              <th className="px-4 py-2 text-left">Mobile Number</th>
-              <th className="px-4 py-2 text-left">Title</th>
-              <th className="px-4 py-2 text-left">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {enquiries.map((enq, idx) => (
-              <tr key={enq._id} className="border-b">
-                <td className="px-4 py-2">{(currentPage - 1) * limit + idx + 1}</td>
-                <td className="px-4 py-2">{enq.orderId}</td>
-                <td className="px-4 py-2">{enq.mobileNumber}</td>
-                <td className="px-4 py-2">{enq.title}</td>
-                <td className="px-4 py-2">{enq.description}</td>
+        {loading ? (
+          <div className="flex justify-center items-center my-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2 text-blue-600">Loading...</span>
+          </div>
+        ) : (
+          <table className="min-w-full table-auto border-collapse text-sm">
+            <thead>
+              <tr className="border-b bg-gray-100">
+                <th className="px-4 py-2 text-left">SI No.</th>
+                <th className="px-4 py-2 text-left">Order ID</th>
+                <th className="px-4 py-2 text-left">Mobile Number</th>
+                <th className="px-4 py-2 text-left">Title</th>
+                <th className="px-4 py-2 text-left">Description</th>
               </tr>
-            ))}
-
-            {!loading && enquiries.length === 0 && (
-              <tr>
-                <td colSpan="5" className="text-center py-4">
-                  No enquiries found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {enquiries.length > 0 ? (
+                enquiries.map((enq, idx) => (
+                  <tr key={enq._id} className="border-b">
+                    <td className="px-4 py-2">{(currentPage - 1) * limit + idx + 1}</td>
+                    <td className="px-4 py-2">{enq.orderId}</td>
+                    <td className="px-4 py-2">{enq.mobileNumber}</td>
+                    <td className="px-4 py-2">{enq.title}</td>
+                    <td className="px-4 py-2">{enq.description}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="text-center py-8 text-gray-500">
+                    <p className="text-lg">No tickets found.</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
 
       <Pagination

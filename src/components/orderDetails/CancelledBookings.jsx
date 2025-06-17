@@ -14,7 +14,7 @@ const CancelledBookings = () => {
   const [searchInput, setSearchInput] = useState(""); // Temporary input holder
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const limit = 5; // Pagination limit
+  const limit = 10; // Pagination limit
 
   const navigate = useNavigate();
 
@@ -105,29 +105,32 @@ const CancelledBookings = () => {
 
       {/* Error and Loading States */}
       {error && <p className="text-red-600">{error}</p>}
-      {loading && <p>Loading...</p>}
 
-      {/* Table displaying cancelled orders */}
       <div className="overflow-x-auto bg-white p-3 rounded-lg shadow-md">
-        <table className="min-w-full table-auto border-collapse text-sm">
-          <thead>
-            <tr className="border-b bg-gray-100">
-              <th className="px-4 py-2 text-left">SI No.</th>
-              <th className="px-4 py-2 text-left">Order Id</th>
-              <th className="px-4 py-2 text-left">Customer Name</th>
-              <th className="px-4 py-2 text-left">Cancelled Date</th>
-              <th className="px-4 py-2 text-left">Refund Amount</th>
-              <th className="px-4 py-2 text-left">Cancellation Reason</th>
-              <th className="px-4 py-2 text-left">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* Display order data */}
-            {orderData?.length > 0 ? (
-              orderData.map((order, index) => (
+        {loading ? (
+          <div className="flex justify-center items-center my-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2 text-blue-600">Loading...</span>
+          </div>
+        ) : orderData?.length > 0 ? (
+          <table className="min-w-full table-auto border-collapse text-sm">
+            <thead>
+              <tr className="border-b bg-gray-100">
+                <th className="px-4 py-2 text-left">SI No.</th>
+                <th className="px-4 py-2 text-left">Order Id</th>
+                <th className="px-4 py-2 text-left">Customer Name</th>
+                <th className="px-4 py-2 text-left">Cancelled Date</th>
+                <th className="px-4 py-2 text-left">Refund Amount</th>
+                <th className="px-4 py-2 text-left">Cancellation Reason</th>
+                <th className="px-4 py-2 text-left">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orderData.map((order, index) => (
                 <tr key={order._id} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-2 font-bold">
-                    {(currentPage - 1) * limit + index + 1}
+                    {/* {(currentPage - 1) * limit + index + 1} */}
+                    {index + 1}
                   </td>
                   <td className="px-4 py-2">{order.orderId}</td>
                   <td className="px-4 py-2">{order.customerName}</td>
@@ -141,24 +144,22 @@ const CancelledBookings = () => {
                     <Link to={`/orderdetails/details/${order._id}`}>  <IoEyeSharp size={18} /></Link>
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6" className="text-center py-4">
-                  No cancelled bookings found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <p className="text-lg">No cancelled bookings found.</p>
+          </div>
+        )}
       </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
         <Pagination
-          totalPages={totalPages}
           currentPage={currentPage}
-          handlePageChange={handlePageChange}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
         />
       )}
     </div>
