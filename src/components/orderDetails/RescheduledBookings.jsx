@@ -133,7 +133,7 @@ const RescheduledBookings = () => {
                   <td className="px-4 py-2">{order.rescheduledEventDate ? formatDate(order.rescheduledEventDate) : "Same Date"}</td>
                   <td className="px-4 py-2">{order.reason || "—"}</td>
                   <td className="px-4 py-2">
-                    <Link to={`/orderdetails/details/${order._id}`}>  <IoEyeSharp size={18} /></Link>
+                    <Link to={`/orderdetails/rescheduled-bookings/${order._id}`}>  <IoEyeSharp size={18} /></Link>
                   </td>
                 </tr>
               ))}

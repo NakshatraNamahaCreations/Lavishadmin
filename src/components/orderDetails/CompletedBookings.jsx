@@ -127,7 +127,7 @@ const CompletedBookings = () => {
                   <td className="px-4 py-2">{order.customerName}</td>
                   <td className="px-4 py-2">{formatDate(order.eventDate)}</td>
                   <td className="px-4 py-2">
-                    <Link to={`/orderdetails/details/${order._id}`}>  <IoEyeSharp size={18} /></Link>
+                    <Link to={`/orderdetails/completed-bookings/${order._id}`}>  <IoEyeSharp size={18} /></Link>
                   </td>
                 </tr>
               ))}

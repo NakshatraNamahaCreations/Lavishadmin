@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import { getAuthAxios, getAxios } from "../../utils/api";
 
 const OrderDetails = () => {
     const { id } = useParams();
+    const location = useLocation();
     const [orderDetails, setOrderDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [updatingStatus, setUpdatingStatus] = useState(false);
 
-const authAxios = getAuthAxios()
+    // Check if we're on the specific route that allows status changes
+    const isStatusEditable = location.pathname === `/orderdetails/details/${id}`;
+
+    const authAxios = getAuthAxios()
 
     useEffect(() => {
         const fetchOrder = async () => {
@@ -97,24 +101,52 @@ const authAxios = getAuthAxios()
                     <p><strong>Order ID:</strong> {orderDetails.orderId}</p>
                     <div className="flex items-center gap-3">
                         <label className="font-semibold">Status:</label>
-                        {orderDetails.orderStatus === "created" || orderDetails.orderStatus === "cancelled" || orderDetails.orderStatus === "completed" ? (
+                        {/* Check if order was cancelled from website - if so, don't allow admin changes */}
+                        {orderDetails.orderStatus === "cancelled" && orderDetails.cancelledFromWebsite ? (
+                            <span className="px-2 py-1 bg-red-200 text-red-800 rounded capitalize">
+                                {orderDetails.orderStatus} (Cancelled from Website)
+                            </span>
+                        ) : (
                             <>
-                                <select
-                                    value={orderDetails.orderStatus}
-                                    onChange={(e) => handleStatusChange(e.target.value)}
-                                    className="border border-gray-300 rounded px-2 py-1"
-                                    disabled={updatingStatus}
-                                >
-                                    <option value="created" disabled>created</option>
-                                    <option value="completed">completed</option>
-                                    <option value="cancelled">cancelled</option>
-                                </select>
+                                {isStatusEditable ? (
+                                    <select
+                                        value={orderDetails.orderStatus}
+                                        onChange={(e) => handleStatusChange(e.target.value)}
+                                        className="border border-gray-300 rounded px-2 py-1"
+                                        disabled={updatingStatus}
+                                    >
+                                        <option value={orderDetails.orderStatus} disabled>
+                                            {orderDetails.orderStatus}
+                                        </option>
+                                        {/* If event date has passed and status is still created, only show completed/cancelled */}
+                                        {orderDetails.orderStatus === "created" && new Date(orderDetails.eventDate) < new Date() ? (
+                                            <>
+                                                <option value="completed">completed</option>
+                                                <option value="cancelled">cancelled</option>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <option value="created">created</option>
+                                                <option value="completed">completed</option>
+                                                <option value="cancelled">cancelled</option>
+                                            </>
+                                        )}
+                                    </select>
+                                ) : (
+                                    <span className={`px-2 py-1 rounded capitalize ${
+                                        orderDetails.orderStatus === "cancelled" 
+                                            ? "bg-red-200 text-red-800" 
+                                            : orderDetails.orderStatus === "rescheduled" 
+                                            ? "bg-purple-200 text-purple-800" 
+                                            : orderDetails.orderStatus === "completed" 
+                                            ? "bg-green-200 text-green-800" 
+                                            : "bg-gray-200 text-gray-800"
+                                    }`}>
+                                        {orderDetails.orderStatus}
+                                    </span>
+                                )}
                                 {updatingStatus && <span className="text-sm text-gray-500">Updating...</span>}
                             </>
-                        ) : (
-                            <span className="px-2 py-1 bg-gray-200 rounded text-gray-800 capitalize">
-                                {orderDetails.orderStatus}
-                            </span>
                         )}
                     </div>
 

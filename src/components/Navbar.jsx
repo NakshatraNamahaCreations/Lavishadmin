@@ -51,7 +51,7 @@ const Navbar = ({ setOpenSidebar, onLogout }) => {
         {currentAdmin?.profileImage ? (
           <img
             // src={`/images/uploads/${currentAdmin.profileImage}`}
-            src={`http://localhost:5000/images/${currentAdmin.profileImage}`}
+            src={`https://api.lavisheventzz.com/api/images/${currentAdmin.profileImage}`}
             alt="Profile"
             className="w-8 h-8 rounded-full object-cover"
           />

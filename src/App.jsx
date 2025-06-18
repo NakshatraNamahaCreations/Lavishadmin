@@ -165,6 +165,18 @@ const AppContent = () => {
                         path="/orderdetails/details/:id"
                         element={<OrderDetails />}
                       />
+                      <Route
+                        path="/orderdetails/cancelled-bookings/:id"
+                        element={<OrderDetails />}
+                      />
+                      <Route
+                        path="/orderdetails/rescheduled-bookings/:id"
+                        element={<OrderDetails />}
+                      />
+                      <Route
+                        path="/orderdetails/completed-bookings/:id"
+                        element={<OrderDetails />}
+                      />
                       <Route path="/coupon" element={<CouponCreations />} />
                       <Route
                         path="/users/:userid"
