@@ -32,6 +32,7 @@ const Userdetails = () => {
   };
 
   const fectchbySearch = async () => {
+    console.log("fetch br search")
     setLoading(true);
     setError("");
     try {
@@ -43,6 +44,7 @@ const Userdetails = () => {
           },
         }
       );
+      console.log("user:", response.data.data.users)
       setData(response.data.data.users);
       setTotalPages(response.data.data.pagination.totalPages);
     } catch (error) {
@@ -68,6 +70,7 @@ const Userdetails = () => {
       );
       const { users } = response.data.data;
       setData(users);
+      console.log("users", users)
       setTotalPages(response.data.data.pagination.totalPages);
     } catch (error) {
       console.log(error);
