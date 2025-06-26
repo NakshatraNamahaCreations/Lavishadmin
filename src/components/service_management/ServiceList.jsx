@@ -37,7 +37,8 @@ const ServiceList = () => {
 
   const handleDelete = async (id) => {
     try {
-      await authAxios().delete(`/services/delete/${id}`);
+      
+      await authAxios.delete(`/services/delete/${id}`);
       fetchServices(page, searchQuery); // Refresh the current page after deletion
     } catch (error) {
       setError(error?.response?.data?.message || "Failed to delete service");

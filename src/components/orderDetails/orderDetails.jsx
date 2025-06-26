@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import { getAuthAxios, getAxios } from "../../utils/api";
+import dayjs from "dayjs";
 
 const OrderDetails = () => {
     const { id } = useParams();
@@ -10,6 +11,12 @@ const OrderDetails = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [updatingStatus, setUpdatingStatus] = useState(false);
+    const [showCancelModal, setShowCancelModal] = useState(false);
+    const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+    const [cancelReason, setCancelReason] = useState("");
+    const [rescheduleReason, setRescheduleReason] = useState("");
+    const [rescheduleDate, setRescheduleDate] = useState("");
+    const [modalLoading, setModalLoading] = useState(false);
 
     // Check if we're on the specific route that allows status changes
     const isStatusEditable = location.pathname === `/orderdetails/details/${id}`;
@@ -81,6 +88,69 @@ const OrderDetails = () => {
         }
     };
 
+    const handleCancelOrder = async () => {
+        if (!cancelReason.trim()) {
+            alert("Cancellation reason is required.");
+            return;
+        }
+        setModalLoading(true);
+        try {
+            const response = await authAxios.put(`/orders/updateOrderStatus/${orderDetails._id}`, {
+                status: "cancelled",
+                reason: cancelReason,
+            });
+            if (response.data.success) {
+                setOrderDetails((prev) => ({
+                    ...prev,
+                    orderStatus: "cancelled",
+                    reason: cancelReason,
+                }));
+                setShowCancelModal(false);
+                setCancelReason("");
+                alert("Order cancelled successfully.");
+            } else {
+                alert("Failed to cancel order.");
+            }
+        } catch (error) {
+            alert("An error occurred while cancelling the order.");
+        } finally {
+            setModalLoading(false);
+        }
+    };
+
+    const handleRescheduleOrder = async () => {
+        if (!rescheduleReason.trim() || !rescheduleDate) {
+            alert("Both reason and new date are required.");
+            return;
+        }
+        setModalLoading(true);
+        try {
+            const response = await authAxios.put(`/orders/updateOrderStatus/${orderDetails._id}`, {
+                status: "rescheduled",
+                reason: rescheduleReason,
+                rescheduledEventDate: rescheduleDate,
+            });
+            if (response.data.success) {
+                setOrderDetails((prev) => ({
+                    ...prev,
+                    orderStatus: "rescheduled",
+                    reason: rescheduleReason,
+                    rescheduledEventDate: rescheduleDate,
+                }));
+                setShowRescheduleModal(false);
+                setRescheduleReason("");
+                setRescheduleDate("");
+                alert("Order rescheduled successfully.");
+            } else {
+                alert("Failed to reschedule order.");
+            }
+        } catch (error) {
+            alert("An error occurred while rescheduling the order.");
+        } finally {
+            setModalLoading(false);
+        }
+    };
+
     if (loading) return <div className="text-center mt-10">Loading...</div>;
     if (error) return <div className="text-center text-red-600 mt-10">{error}</div>;
     if (!orderDetails) return <div className="text-center mt-10">No order data available.</div>;
@@ -111,24 +181,30 @@ const OrderDetails = () => {
                                 {isStatusEditable ? (
                                     <select
                                         value={orderDetails.orderStatus}
-                                        onChange={(e) => handleStatusChange(e.target.value)}
+                                        onChange={(e) => {
+                                            if (e.target.value === "cancelled") setShowCancelModal(true);
+                                            else if (e.target.value === "rescheduled") setShowRescheduleModal(true);
+                                            else handleStatusChange(e.target.value);
+                                        }}
                                         className="border border-gray-300 rounded px-2 py-1"
                                         disabled={updatingStatus}
                                     >
                                         <option value={orderDetails.orderStatus} disabled>
                                             {orderDetails.orderStatus}
                                         </option>
-                                        {/* If event date has passed and status is still created, only show completed/cancelled */}
+                                        {/* If event date has passed and status is still created, only show completed/cancelled/rescheduled */}
                                         {orderDetails.orderStatus === "created" && new Date(orderDetails.eventDate) < new Date() ? (
                                             <>
                                                 <option value="completed">completed</option>
                                                 <option value="cancelled">cancelled</option>
+                                                <option value="rescheduled">rescheduled</option>
                                             </>
                                         ) : (
                                             <>
                                                 <option value="created">created</option>
                                                 <option value="completed">completed</option>
                                                 <option value="cancelled">cancelled</option>
+                                                <option value="rescheduled">rescheduled</option>
                                             </>
                                         )}
                                     </select>
@@ -262,6 +338,78 @@ const OrderDetails = () => {
                 </div>
             </div>
 
+            {/* Cancel Modal */}
+            {showCancelModal && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                    <div className="bg-white w-full max-w-md p-6 rounded-md shadow-lg">
+                        <h2 className="text-xl font-semibold mb-4">Cancel Order</h2>
+                        <label className="block mb-2 font-medium">Reason for cancellation</label>
+                        <textarea
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4"
+                            rows={3}
+                            value={cancelReason}
+                            onChange={e => setCancelReason(e.target.value)}
+                            placeholder="Enter reason..."
+                        />
+                        <div className="flex justify-end gap-2 mt-4">
+                            <button
+                                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
+                                onClick={() => { setShowCancelModal(false); setCancelReason(""); }}
+                                disabled={modalLoading}
+                            >
+                                Close
+                            </button>
+                            <button
+                                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                                onClick={handleCancelOrder}
+                                disabled={modalLoading}
+                            >
+                                {modalLoading ? "Cancelling..." : "Confirm Cancel"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Reschedule Modal */}
+            {showRescheduleModal && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                    <div className="bg-white w-full max-w-md p-6 rounded-md shadow-lg">
+                        <h2 className="text-xl font-semibold mb-4">Reschedule Event</h2>
+                        <label className="block mb-2 font-medium">Reason for rescheduling</label>
+                        <textarea
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4"
+                            rows={3}
+                            value={rescheduleReason}
+                            onChange={e => setRescheduleReason(e.target.value)}
+                            placeholder="Enter reason..."
+                        />
+                        <label className="block mb-2 font-medium">New Event Date</label>
+                        <input
+                            type="date"
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4"
+                            value={rescheduleDate}
+                            min={dayjs().format('YYYY-MM-DD')}
+                            onChange={e => setRescheduleDate(e.target.value)}
+                        />
+                        <div className="flex justify-end gap-2 mt-4">
+                            <button
+                                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
+                                onClick={() => { setShowRescheduleModal(false); setRescheduleReason(""); setRescheduleDate(""); }}
+                                disabled={modalLoading}
+                            >
+                                Close
+                            </button>
+                            <button
+                                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                                onClick={handleRescheduleOrder}
+                                disabled={modalLoading}
+                            >
+                                {modalLoading ? "Rescheduling..." : "Confirm Reschedule"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
         </div>
     );
