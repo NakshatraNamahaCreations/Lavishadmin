@@ -41,8 +41,7 @@ import PaymentsDetails from "./components/payment/PaymentsDetails.jsx";
 import Teams from "./components/settings/teams/Teams.jsx";
 import AddTeamMember from "./components/settings/teams/AddTeamMember.jsx";
 import EditTeamMember from "./components/settings/teams/EditTeamMember.jsx";
-// import OrderDetails from "./components/orderDetails/orderDetails.jsx";
-import OrderDetails from "./components/orderDetails/OrderDetails.jsx"
+import OrderDetail from "./components/orderDetails/OrderDetail.jsx"
 import Enquiry from "./components/Enquiry.jsx";
 import RaiseTicket from "./components/RaiseTicket.jsx";
 import Invoice from "./components/orderDetails/Invoice.jsx";
@@ -164,19 +163,19 @@ const AppContent = () => {
                       />
                       <Route
                         path="/orderdetails/details/:id"
-                        element={<OrderDetails />}
+                        element={<OrderDetail />}
                       />
                       <Route
                         path="/orderdetails/cancelled-bookings/:id"
-                        element={<OrderDetails />}
+                        element={<OrderDetail />}
                       />
                       <Route
                         path="/orderdetails/rescheduled-bookings/:id"
-                        element={<OrderDetails />}
+                        element={<OrderDetail />}
                       />
                       <Route
                         path="/orderdetails/completed-bookings/:id"
-                        element={<OrderDetails />}
+                        element={<OrderDetail />}
                       />
                       <Route path="/coupon" element={<CouponCreations />} />
                       <Route
