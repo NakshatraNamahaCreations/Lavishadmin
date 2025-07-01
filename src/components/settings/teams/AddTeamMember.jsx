@@ -23,7 +23,7 @@ const availableTabs = [
   { key: "rescheduled_bookings", label: "Rescheduled Bookings" },
   { key: "completed_bookings", label: "Completed Bookings" },
   { key: "payment_details", label: "Payment Details" },
-  { key: "report", label: "Reports" },
+  // { key: "report", label: "Reports" },
   { key: "teams", label: "Teams" },
   { key: "raised_tickets", label: "Raise Ticket" },
 ];

@@ -41,7 +41,8 @@ import PaymentsDetails from "./components/payment/PaymentsDetails.jsx";
 import Teams from "./components/settings/teams/Teams.jsx";
 import AddTeamMember from "./components/settings/teams/AddTeamMember.jsx";
 import EditTeamMember from "./components/settings/teams/EditTeamMember.jsx";
-import OrderDetails from "./components/orderDetails/orderDetails.jsx";
+// import OrderDetails from "./components/orderDetails/orderDetails.jsx";
+import OrderDetails from "./components/orderDetails/OrderDetails.jsx"
 import Enquiry from "./components/Enquiry.jsx";
 import RaiseTicket from "./components/RaiseTicket.jsx";
 import Invoice from "./components/orderDetails/Invoice.jsx";

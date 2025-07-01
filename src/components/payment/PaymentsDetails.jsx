@@ -4,7 +4,7 @@
 // import { IoArrowBack } from "react-icons/io5";
 // import { IoEyeSharp } from "react-icons/io5";
 // import { FaRegEdit } from "react-icons/fa";
-// import axios from "axios"; 
+// import axios from "axios";
 // import { getAxios } from "../../utils/api";
 
 // const PaymentsDetails = () => {
@@ -211,23 +211,16 @@
 
 // export default PaymentsDetails;
 
-
-
 import { useState, useEffect } from "react";
 import { MdOutlineCurrencyRupee } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { IoArrowBack } from "react-icons/io5";
-import { IoEyeSharp } from "react-icons/io5";
-import { FaRegEdit } from "react-icons/fa";
-import { getAxios } from "../../utils/api";
 import Pagination from "../Pagination"; // Adjust path if needed
+import { getAxios } from "../../utils/api";
 
 const PaymentsDetails = () => {
   const [searchVal, setSearchVal] = useState("");
-  const [showModal, setShowModal] = useState(false);
   const [paymentDate, setPaymentDate] = useState("");
-  const [paidAmount, setPaidAmount] = useState("");
-  const [paymentMode, setPaymentMode] = useState("");
   const [payments, setPayments] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -235,22 +228,24 @@ const PaymentsDetails = () => {
   const limit = 10;
   const navigate = useNavigate();
 
-  // Fetch payments based on current page and search value
+  // Fetch payments based on current page, search value, and booking date
   const fetchPayments = async () => {
     setLoading(true);
     try {
       const res = await getAxios().get("/payment", {
         params: {
           page: currentPage,
-          limit: limit,
+          limit,
           search: searchVal,
+          bookingDate: paymentDate,
         },
       });
-      setPayments(res.data.data.payments || res.data.data); // adapt if your API returns {payments:[],pagination:{}} or just []
+      // Adapt to your backend response structure
+      setPayments(res.data.data || []);
       setTotalPages(
-        res.data.data.pagination
-          ? res.data.data.pagination.totalPages
-          : Math.ceil((res.data.data.total || 0) / limit)
+        res.data.pagination
+          ? res.data.pagination.pages
+          : Math.ceil((res.data.pagination?.total || 0) / limit)
       );
     } catch (err) {
       console.error("Failed to fetch payments:", err);
@@ -259,11 +254,11 @@ const PaymentsDetails = () => {
     }
   };
 
-  // Trigger fetch on page or search change
+  // Fetch on mount, page, search, or date change
   useEffect(() => {
     fetchPayments();
     // eslint-disable-next-line
-  }, [currentPage]);
+  }, [currentPage, searchVal, paymentDate]);
 
   // Search handler
   const handleSearch = () => {
@@ -287,17 +282,27 @@ const PaymentsDetails = () => {
         </div>
         <div className="flex gap-2">
           <input
-            placeholder="Search"
+            placeholder="Search by Order ID, Name, or Amount"
             className="px-4 py-2 border border-gray-300 rounded-md"
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           />
-          <button
+          <input
+            type="date"
+            className="px-4 py-2 border border-gray-300 rounded-md"
+            value={paymentDate}
+            onChange={(e) => {
+              setPaymentDate(e.target.value);
+              setCurrentPage(1);
+            }}
+          />
+          {/* <button
             className="bg-yellow-500 text-white px-4 py-2 rounded-md"
             onClick={handleSearch}
           >
             Search
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -327,17 +332,26 @@ const PaymentsDetails = () => {
             <tbody>
               {payments.map((payment, idx) => (
                 <tr key={payment._id} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2">{(currentPage - 1) * limit + idx + 1}</td>
+                  <td className="px-4 py-2">
+                    {(currentPage - 1) * limit + idx + 1}
+                  </td>
                   <td className="px-4 py-2">
                     {payment.createdAt
-                      ? new Date(payment.createdAt).toLocaleDateString()
+                      ? (() => {
+                          const d = new Date(payment.createdAt);
+                          const day = String(d.getDate()).padStart(2, "0");
+                          const month = String(d.getMonth() + 1).padStart(
+                            2,
+                            "0"
+                          );
+                          const year = d.getFullYear();
+                          return `${day}-${month}-${year}`;
+                        })()
                       : "-"}
                   </td>
                   <td className="px-4 py-2">{payment.orderId || "-"}</td>
                   <td className="px-4 py-2">
-                    {payment.customerId
-                      ? `${payment.customerId.firstName} ${payment.customerId.lastName}`
-                      : "-"}
+                    {payment?.orderDetails?.customerName}
                   </td>
                   <td className="px-4 py-2">
                     <div className="flex items-center">
@@ -345,8 +359,14 @@ const PaymentsDetails = () => {
                       {payment.amount || "-"}
                     </div>
                   </td>
-                  <td className="px-4 py-2 text-white font-medium bg-yellow-500">
-                    {payment.status || "Partially Paid"}
+                  <td
+                    className={`px-4 py-2 font-medium ${
+                      payment.status === "CANCELLED"
+                        ? "text-red-700"
+                        : "text-green-500 "
+                    }`}
+                  >
+                    {payment.status}
                   </td>
                 </tr>
               ))}
@@ -361,66 +381,6 @@ const PaymentsDetails = () => {
         totalPages={totalPages}
         onPageChange={(newPage) => setCurrentPage(newPage)}
       />
-
-      {/* ...existing modal code... */}
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-          <div className="bg-white w-full max-w-md p-6 rounded-md shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Update Payment Details</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Payment Date</label>
-                <input
-                  type="date"
-                  value={paymentDate}
-                  onChange={(e) => setPaymentDate(e.target.value)}
-                  className="w-full border border-gray-300 px-3 py-2 rounded-md"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Amount Paid</label>
-                <input
-                  type="number"
-                  value={paidAmount}
-                  onChange={(e) => setPaidAmount(e.target.value)}
-                  className="w-full border border-gray-300 px-3 py-2 rounded-md"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Payment Mode</label>
-                <select
-                  value={paymentMode}
-                  onChange={(e) => setPaymentMode(e.target.value)}
-                  className="w-full border border-gray-300 px-3 py-2 rounded-md"
-                >
-                  <option value="">Select Mode</option>
-                  <option value="cash">Cash</option>
-                  <option value="card">Card</option>
-                  <option value="upi">UPI</option>
-                  <option value="bank_transfer">Bank Transfer</option>
-                </select>
-              </div>
-            </div>
-            <div className="flex justify-end gap-2 mt-6">
-              <button
-                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
-                onClick={() => setShowModal(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                onClick={() => {
-                  console.log({ paymentDate, paidAmount, paymentMode });
-                  setShowModal(false);
-                }}
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

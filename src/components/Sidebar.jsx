@@ -187,13 +187,13 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
             </li>
           )}
 
-          {currentAdmin.accessTabs.includes("report") && (
+          {/* {currentAdmin.accessTabs.includes("report") && (
             <li>
               <Link to="/report" className={`block px-3 py-2 rounded-md ${isActive("/report") ? "bg-gray-600" : "hover:bg-gray-700"}`}>
                 Reports
               </Link>
             </li>
-          )}
+          )} */}
 
           {currentAdmin.accessTabs.includes("teams") && (
             <li>
