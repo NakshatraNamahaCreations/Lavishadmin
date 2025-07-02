@@ -107,7 +107,7 @@ const Invoice = () => {
           <div className="text-right">
             <h2 className="font-semibold text-lg">Lavish Eventzz</h2>
             <p className="text-sm text-gray-600">Phone: +919620558000</p>
-            <p className="text-sm text-gray-600">infolavisheventzz@gmail.com</p>
+            <p className="text-sm text-gray-600">support@lavisheventzz.com</p>
           </div>
         </div>
 
