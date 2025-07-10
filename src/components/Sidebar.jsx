@@ -195,6 +195,12 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
             </li>
           )} */}
 
+             <li>
+              <Link to="/blogs" className={`block px-3 py-2 rounded-md ${isActive("/report") ? "bg-gray-600" : "hover:bg-gray-700"}`}>
+                Add Blogs
+              </Link>
+            </li>
+
           {currentAdmin.accessTabs.includes("teams") && (
             <li>
               <Link to="/teams" className={`block px-3 py-2 rounded-md ${isActive("/teams") ? "bg-gray-600" : "hover:bg-gray-700"}`}>

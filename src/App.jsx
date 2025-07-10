@@ -41,10 +41,13 @@ import PaymentsDetails from "./components/payment/PaymentsDetails.jsx";
 import Teams from "./components/settings/teams/Teams.jsx";
 import AddTeamMember from "./components/settings/teams/AddTeamMember.jsx";
 import EditTeamMember from "./components/settings/teams/EditTeamMember.jsx";
-import OrderDetail from "./components/orderDetails/OrderDetail.jsx"
+import OrderDetail from "./components/orderDetails/OrderDetail.jsx";
 import Enquiry from "./components/Enquiry.jsx";
 import RaiseTicket from "./components/RaiseTicket.jsx";
 import Invoice from "./components/orderDetails/Invoice.jsx";
+import Blogs from "./components/Blogs/Blogs.jsx";
+import AddBlog from "./components/Blogs/AddBlog.jsx";
+import EditBlog from "./components/Blogs/EditBlog.jsx";
 
 const AppContent = () => {
   const [openSidebar, setOpenSidebar] = useState(false);
@@ -54,7 +57,6 @@ const AppContent = () => {
   const handleLogout = () => {
     logout();
   };
-
 
   return (
     <Router>
@@ -186,19 +188,28 @@ const AppContent = () => {
                         path="/order/:_id"
                         element={<OrderDetailsCard />}
                       />
-                      <Route
-                        path="/invoice/:id"
-                        element={<Invoice />}
-                      />
+                      <Route path="/invoice/:id" element={<Invoice />} />
                       <Route
                         path="/payment-details"
                         element={<PaymentsDetails />}
                       />
-                      <Route path="/report" element={<Reports />} />
+                      {/* <Route path="/report" element={<Reports />} /> */}
+                      <Route path="/blogs" element={<Blogs />} />
+                      <Route path="/blogs/add-blog" element={<AddBlog />} />
+                      <Route path="/blogs/edit-blog/:id" element={<EditBlog />} />
                       <Route path="/teams" element={<Teams />} />
-                      <Route path="/raised-tickests" element={<RaiseTicket />} />
-                      <Route path="/teams/add-member" element={<AddTeamMember />} />
-                      <Route path="/teams/edit-member/:id" element={<EditTeamMember />} />
+                      <Route
+                        path="/raised-tickests"
+                        element={<RaiseTicket />}
+                      />
+                      <Route
+                        path="/teams/add-member"
+                        element={<AddTeamMember />}
+                      />
+                      <Route
+                        path="/teams/edit-member/:id"
+                        element={<EditTeamMember />}
+                      />
                     </Routes>
                   </div>
                 </div>
