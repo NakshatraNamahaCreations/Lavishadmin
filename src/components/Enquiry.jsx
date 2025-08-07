@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Pagination from "./Pagination";
 import { getAxios } from "../utils/api";
+import dayjs from "dayjs";
 
-const statusOptions = ["Interested", "Not Interested", "Pending", "Follow Up"];
+const formatDateTime = (isoString) => {
+  return dayjs(isoString).format("DD-MM-YYYY hh:mm A");
+};
 
 const Enquiry = () => {
   const [enquiries, setEnquiries] = useState([]);
@@ -25,6 +28,7 @@ const Enquiry = () => {
           limit: limit,
         },
       });
+      console.log("enquiries",response.data.data.enquiries)
       setEnquiries(response.data.data.enquiries);
       setTotalPages(response.data.data.pagination.totalPages);
     } catch (error) {
@@ -77,32 +81,19 @@ const Enquiry = () => {
                 <th className="px-4 py-2 text-left">Email</th>
                 <th className="px-4 py-2 text-left">Service</th>
                 <th className="px-4 py-2 text-left">Message</th>
-                {/* <th className="px-4 py-2 text-left">Status</th> */}
+               <th className="px-4 py-2 text-left">Date & Time</th>
               </tr>
             </thead>
             <tbody>
               {enquiries.map((enq, idx) => (
                 <tr key={enq._id} className="border-b">
-                  <td className="px-4 py-2">{(currentPage - 1) * limit + idx + 1}</td>
-                  <td className="px-4 py-2">{enq.name}</td>
-                  <td className="px-4 py-2">{enq.phone}</td>
-                  <td className="px-4 py-2">{enq.email}</td>
-                  <td className="px-4 py-2">{enq.service}</td>
-                  <td className="px-4 py-2">{enq.message}</td>
-                  {/* <td className="px-4 py-2">
-                    <select
-                      value={enq.status || ""}
-                      onChange={(e) => handleStatusChange(enq._id, e.target.value)}
-                      className="border px-2 py-1 rounded"
-                    >
-                      <option value="">Select Status</option>
-                      {statusOptions.map((opt) => (
-                        <option key={opt} value={opt}>
-                          {opt}
-                        </option>
-                      ))}
-                    </select>
-                  </td> */}
+                  <td className="px-2 py-2">{(currentPage - 1) * limit + idx + 1}</td>
+                  <td className="px-2 py-2">{enq.name}</td>
+                  <td className="px-2 py-2">{enq.phone}</td>
+                  <td className="px-2 py-2  ">{enq.email}</td>
+                  <td className="px-2 py-2">{enq.service}</td>
+                  <td className="px-2 py-2 ">{enq.message}</td>
+                    <td className="px-2 py-2">{formatDateTime(enq.createdAt)}</td>
                 </tr>
               ))}
             </tbody>
