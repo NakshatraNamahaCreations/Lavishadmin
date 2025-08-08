@@ -36,8 +36,12 @@ const ServiceList = () => {
   };
 
   const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this service?"
+    );
+    if (!confirmDelete) return;
+    
     try {
-      
       await authAxios.delete(`/services/delete/${id}`);
       fetchServices(page, searchQuery); // Refresh the current page after deletion
     } catch (error) {

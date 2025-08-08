@@ -10,7 +10,7 @@ const formatDateTime = (isoString) => {
 
 const Enquiry = () => {
   const [enquiries, setEnquiries] = useState([]);
-  const [searchVal, setSearchVal] = useState(""); // Store the search term
+  const [searchVal, setSearchVal] = useState(""); 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -40,8 +40,8 @@ const Enquiry = () => {
 
   // Trigger search and reset to the first page
   const handleSearch = () => {
-    setCurrentPage(1); // Reset to the first page
-    fetchEnquiries();  // Fetch with search term
+    setCurrentPage(1); 
+    fetchEnquiries();  
   };
 
   useEffect(() => {
