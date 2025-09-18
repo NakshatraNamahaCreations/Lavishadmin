@@ -2,8 +2,6 @@
 // import { FiEdit, FiTrash2 } from "react-icons/fi";
 // import { getAuthAxios } from "../../utils/api";
 // import Pagination from "../Pagination";
-// import { CKEditor } from "@ckeditor/ckeditor5-react";
-// import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 // const AddSubSubCategory = () => {
 //   const [selectedCategory, setSelectedCategory] = useState("");
@@ -14,11 +12,6 @@
 //   const [categories, setCategories] = useState([]);
 //   const [subCategories, setSubCategories] = useState([]);
 //   const [subSubCategories, setSubSubCategories] = useState([]);
-//   const [metaTitle, setMetaTitle] = useState("");
-//   const [metaDescription, setMetaDescription] = useState("");
-//   const [caption, setCaption] = useState("");
-//   const [keywords, setKeywords] = useState("");
-//   const [faqs, setFaqs] = useState([{ question: "", answer: "" }]);
 //   const [error, setError] = useState("");
 //   const [loading, setLoading] = useState(false);
 //   const [addloading, setAddLoading] = useState(false);
@@ -29,6 +22,7 @@
 //   const [totalPages, setTotalPages] = useState(0);
 
 //   const limit = 10;
+
 //   const authAxios = getAuthAxios();
 
 //   const toTitleCase = (str) => {
@@ -44,80 +38,54 @@
 //     setCurrentPage(1);
 //   };
 
-//   const handleFaqChange = (index, field, value) => {
-//     const updatedFaqs = [...faqs];
-//     updatedFaqs[index][field] = value;
-//     setFaqs(updatedFaqs);
-//   };
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setError("");
+//     setAddLoading(true);
 
-//   const addFaq = () => {
-//     setFaqs([...faqs, { question: "", answer: "" }]);
-//   };
-
-//   const removeFaq = (index) => {
-//     const updatedFaqs = faqs.filter((_, i) => i !== index);
-//     setFaqs(updatedFaqs);
-//   };
-
-// const handleSubmit = async (e) => {
-//   e.preventDefault();
-//   setError("");
-//   setAddLoading(true);
-
-//   if (
-//     !selectedCategory ||
-//     !selectedSubCategory ||
-//     !subSubCategoryName.trim() ||
-//     !image.trim()
-//   ) {
-//     alert("Please fill all required fields (Category, Sub Category, Name, Image).");
-//     setAddLoading(false);
-//     return;
-//   }
-
-//   const payload = {
-//     subSubCategory: subSubCategoryName.trim(),
-//     subCategory: selectedSubCategory,
-//     image: image.trim(),
-//   };
-
-//   if (metaTitle.trim()) payload.metaTitle = metaTitle.trim();
-//   if (metaDescription.trim()) payload.metaDescription = metaDescription.trim();
-//   if (caption.trim()) payload.caption = caption.trim();
-//   if (keywords.trim()) payload.keywords = keywords.trim();
-
-//   // Only include faqs if at least one has valid content
-//   const validFaqs = faqs.filter(
-//     (faq) => faq.question.trim() && faq.answer.trim()
-//   );
-//   payload.faqs = validFaqs.length > 0 ? validFaqs : [];
-
-//   try {
-//     if (editMode && currentSubSubCategoryId) {
-//       await authAxios.put(`/subsubcategories/update/${currentSubSubCategoryId}`, payload);
-//     } else {
-//       await authAxios.post("/subsubcategories/create", payload);
+//     if (
+//       !selectedCategory ||
+//       !selectedSubCategory ||
+//       !subSubCategoryName.trim() ||
+//       !image.trim()
+//     ) {
+//       alert("Please fill all fields and upload an image URL.");
+//       setAddLoading(false);
+//       return;
 //     }
 
-//     resetForm();
-//     await fetchSubSubCategories();
-//   } catch (err) {
-//     setError(err?.response?.data?.message || "Something went wrong!");
-//   } finally {
-//     setAddLoading(false);
-//   }
-// };
+//     const authAxios = getAuthAxios();
+
+//     try {
+//       const payload = {
+//         subSubCategory: subSubCategoryName.trim(),
+//         subCategory: selectedSubCategory,
+//         image: image.trim(),
+//       };
+
+//       if (editMode && currentSubSubCategoryId) {
+//         await authAxios.put(
+//           `/subsubcategories/update/${currentSubSubCategoryId}`,
+//           payload
+//         );
+//       } else {
+//         await authAxios.post("/subsubcategories/create", payload);
+//       }
+
+//       resetForm();
+//       await fetchSubSubCategories();
+//     } catch (err) {
+//       setError(err?.response?.data?.message || "Something went wrong!");
+//     } finally {
+//       setAddLoading(false);
+//     }
+//   };
 
 //   const resetForm = () => {
 //     setSelectedCategory("");
 //     setSelectedSubCategory("");
 //     setSubSubCategoryName("");
 //     setImage("");
-//     setMetaTitle("");
-//     setMetaDescription("");
-//     setKeywords("")
-//     setCaption("");
-//     setFaqs([{ question: "", answer: "" }]);
 //     setImagePreview("");
 //     setEditMode(false);
 //     setCurrentSubSubCategoryId(null);
@@ -131,26 +99,22 @@
 //     setSubSubCategoryName(item.subSubCategory);
 //     setImage(item.image);
 //     setImagePreview(item.image);
-//     setMetaTitle(item.metaTitle);
-//     setMetaDescription(item.metaDescription);
-//     setCaption(item.caption);
-//     setKeywords(item.keywords);
-//     setFaqs(item.faqs);
 //   };
 
-// const handleDelete = async (id) => {
-//   const confirmDelete = window.confirm("Are you sure you want to delete this sub-sub-category?");
-//   if (!confirmDelete) return;
-
-//   try {
-//     await authAxios.delete(`/subsubcategories/delete/${id}`);
-//     fetchSubSubCategories();
-//   } catch (err) {
-//     setError(
-//       err?.response?.data?.message || "Failed to delete sub-sub-category"
+//   const handleDelete = async (id) => {
+//     const confirmDelete = window.confirm(
+//       "Are you sure you want to delete this sub-sub-category?"
 //     );
-//   }
-// };
+//     if (!confirmDelete) return;
+//     try {
+//       await authAxios.delete(`/subsubcategories/delete/${id}`);
+//       fetchSubSubCategories();
+//     } catch (err) {
+//       setError(
+//         err?.response?.data?.message || "Failed to delete sub-sub-category"
+//       );
+//     }
+//   };
 
 //   const fetchCategories = async () => {
 //     try {
@@ -199,6 +163,7 @@
 //   useEffect(() => {
 //     fetchSubcategoriesByCategory();
 //   }, [selectedCategory]);
+
 //   return (
 //     <div className="min-h-screen bg-gray-100 p-6 lg:p-2">
 //       <div className="bg-white rounded-lg shadow-md p-6 mx-auto">
@@ -257,28 +222,6 @@
 //               }}
 //               className="px-4 py-2 border border-gray-300 rounded-md"
 //             />
-
-//             <input
-//               type="text"
-//               value={metaTitle}
-//               onChange={(e) => setMetaTitle(e.target.value)}
-//               placeholder="Meta Title"
-//               className="px-4 py-2 border border-gray-300 rounded-md"
-//             />
-
-//             <input
-//               type="text"
-//               value={metaDescription}
-//               onChange={(e) => setMetaDescription(e.target.value)}
-//               placeholder="Meta Description"
-//               className="px-4 py-2 border border-gray-300 rounded-md"
-//             />
-//               <textarea
-//               value={keywords}
-//               onChange={(e) => setKeywords(e.target.value)}
-//               placeholder="Keywords"
-//               className="px-4 py-2 border border-gray-300 rounded-md"
-//             />
 //           </div>
 
 //           {imagePreview && (
@@ -291,59 +234,7 @@
 //             </div>
 //           )}
 
-//           <div className="mb-6">
-//             <label className="font-semibold block mb-2">Caption</label>
-//             <CKEditor
-//               editor={ClassicEditor}
-//               data={caption}
-//               onChange={(event, editor) => setCaption(editor.getData())}
-//             />
-//           </div>
-
-//           <div>
-//             <label className="font-semibold block mb-2">FAQs</label>
-//             {faqs.map((faq, index) => (
-//               <div key={index} className="relative mb-4">
-//                 <input
-//                   type="text"
-//                   placeholder="Question"
-//                   value={faq.question}
-//                   onChange={(e) =>
-//                     handleFaqChange(index, "question", e.target.value)
-//                   }
-//                   className="w-full px-4 py-2 mb-2 border border-gray-300 rounded-md"
-//                 />
-//                 <div className="flex justify-center items-center gap-10">
-//                   <textarea
-//                     placeholder="Answer"
-//                     value={faq.answer}
-//                     onChange={(e) =>
-//                       handleFaqChange(index, "answer", e.target.value)
-//                     }
-//                     className="w-full px-4 py-2 mb-2 border border-gray-300 rounded-md"
-//                   />
-//                   <button
-//                     type="button"
-//                     onClick={() => removeFaq(index)}
-//                     className="bg-red-500 text-white text-sm px-3 py-1 rounded"
-//                   >
-//                     Remove
-//                   </button>
-//                 </div>
-//               </div>
-//             ))}
-//             <div className="flex justify-end">
-//               <button
-//                 type="button"
-//                 onClick={addFaq}
-//                 className="bg-gray-700 hover:bg-gray-800 text-sm text-white px-4 py-2 rounded-md"
-//               >
-//                 Add FAQ
-//               </button>
-//             </div>
-//           </div>
-
-//           <div className="text-end mt-4">
+//           <div className="text-end">
 //             <button
 //               className="bg-gray-700 hover:bg-gray-800 text-white px-6 py-2 rounded-md"
 //               type="submit"
@@ -456,6 +347,8 @@ import React, { useState, useEffect } from "react";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { getAuthAxios } from "../../utils/api";
 import Pagination from "../Pagination";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const AddSubSubCategory = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -474,6 +367,12 @@ const AddSubSubCategory = () => {
   const [searchVal, setSearchVal] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+
+  const [metaTitle, setMetaTitle] = useState("");
+  const [metaDescription, setMetaDescription] = useState("");
+  const [keywords, setKeywords] = useState("");
+  const [caption, setCaption] = useState("");
+  const [faqs, setFaqs] = useState([{ question: "", answer: "" }]);
 
   const limit = 10;
 
@@ -510,11 +409,23 @@ const AddSubSubCategory = () => {
 
     const authAxios = getAuthAxios();
 
+    const cleanedFaqs = faqs
+      .filter((faq) => faq.question.trim() && faq.answer.trim())
+      .map((faq) => ({
+        question: faq.question.trim(),
+        answer: faq.answer.trim(),
+      }));
+
     try {
       const payload = {
         subSubCategory: subSubCategoryName.trim(),
         subCategory: selectedSubCategory,
         image: image.trim(),
+        caption,
+        metaTitle,
+        metaDescription,
+        keywords,
+        faqs: cleanedFaqs.length > 0 ? cleanedFaqs : [],
       };
 
       if (editMode && currentSubSubCategoryId) {
@@ -543,6 +454,11 @@ const AddSubSubCategory = () => {
     setImagePreview("");
     setEditMode(false);
     setCurrentSubSubCategoryId(null);
+    setMetaTitle("");
+    setMetaDescription("");
+    setCaption("");
+    setKeywords("");
+    setFaqs([{ question: "", answer: "" }]);
   };
 
   const handleEdit = (item) => {
@@ -553,6 +469,13 @@ const AddSubSubCategory = () => {
     setSubSubCategoryName(item.subSubCategory);
     setImage(item.image);
     setImagePreview(item.image);
+    setMetaTitle(item.metaTitle || "");
+    setMetaDescription(item.metaDescription || "");
+    setCaption(item.caption || "");
+    setKeywords(item.keywords || "");
+    setFaqs(
+      Array.isArray(item.faqs) ? item.faqs : [{ question: "", answer: "" }]
+    );
   };
 
   const handleDelete = async (id) => {
@@ -618,6 +541,20 @@ const AddSubSubCategory = () => {
     fetchSubcategoriesByCategory();
   }, [selectedCategory]);
 
+  const handleFaqChange = (index, field, value) => {
+    const updatedFaqs = [...faqs];
+    updatedFaqs[index][field] = value;
+    setFaqs(updatedFaqs);
+  };
+
+  const addFaq = () => setFaqs([...faqs, { question: "", answer: "" }]);
+
+  const removeFaq = (index) => {
+    const updatedFaqs = [...faqs];
+    updatedFaqs.splice(index, 1);
+    setFaqs(updatedFaqs);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-6 lg:p-2">
       <div className="bg-white rounded-lg shadow-md p-6 mx-auto">
@@ -676,6 +613,80 @@ const AddSubSubCategory = () => {
               }}
               className="px-4 py-2 border border-gray-300 rounded-md"
             />
+
+            <input
+              type="text"
+              value={metaTitle}
+              onChange={(e) => setMetaTitle(e.target.value)}
+              placeholder="Meta Title"
+              className="px-4 py-2 border border-gray-300 rounded-md"
+            />
+
+            <textarea
+              value={metaDescription}
+              onChange={(e) => setMetaDescription(e.target.value)}
+              placeholder="Meta Description"
+              className="px-4 py-2 border border-gray-300 rounded-md"
+            />
+
+            <textarea
+              value={keywords}
+              onChange={(e) => setKeywords(e.target.value)}
+              placeholder="Keywords"
+              className="px-4 py-2 border border-gray-300 rounded-md"
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="font-semibold block mb-2">Caption</label>
+            <CKEditor
+              editor={ClassicEditor}
+              data={caption}
+              onChange={(event, editor) => setCaption(editor.getData())}
+            />
+          </div>
+
+          <div>
+            <label className="font-semibold block mb-2">FAQs</label>
+            {faqs.map((faq, index) => (
+              <div key={index} className="relative mb-4">
+                <input
+                  type="text"
+                  placeholder="Question"
+                  value={faq.question}
+                  onChange={(e) =>
+                    handleFaqChange(index, "question", e.target.value)
+                  }
+                  className="w-full px-4 py-2 mb-2 border border-gray-300 rounded-md"
+                />
+                <div className="flex justify-center items-center gap-10">
+                  <textarea
+                    placeholder="Answer"
+                    value={faq.answer}
+                    onChange={(e) =>
+                      handleFaqChange(index, "answer", e.target.value)
+                    }
+                    className="w-full px-4 py-2 mb-2 border border-gray-300 rounded-md"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeFaq(index)}
+                    className="bg-red-500 text-white text-sm px-3 py-1 rounded"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            ))}
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={addFaq}
+                className="bg-gray-700 hover:bg-gray-800 text-sm text-white px-4 py-2 rounded-md"
+              >
+                Add FAQ
+              </button>
+            </div>
           </div>
 
           {imagePreview && (
@@ -688,7 +699,7 @@ const AddSubSubCategory = () => {
             </div>
           )}
 
-          <div className="text-end">
+          <div className="text-end mt-3">
             <button
               className="bg-gray-700 hover:bg-gray-800 text-white px-6 py-2 rounded-md"
               type="submit"
