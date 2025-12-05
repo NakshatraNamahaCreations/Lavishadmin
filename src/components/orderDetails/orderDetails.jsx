@@ -1,96 +1,56 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
-import axios from "axios";
 import { getAuthAxios, getAxios } from "../../utils/api";
 import dayjs from "dayjs";
 
 const OrderDetails = () => {
   const { id } = useParams();
   const location = useLocation();
+
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const [updatingStatus, setUpdatingStatus] = useState(false);
+
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
-  const [showCompletionModal, setShowCompletionModal] = useState(false); // New state for completion modal
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+
   const [cancelReason, setCancelReason] = useState("");
   const [rescheduleReason, setRescheduleReason] = useState("");
   const [rescheduleDate, setRescheduleDate] = useState("");
-  const [modalLoading, setModalLoading] = useState(false);
   const [rescheduleVenue, setRescheduleVenue] = useState("");
+  const [modalLoading, setModalLoading] = useState(false);
+
   const [paymentMethod, setPaymentMethod] = useState(""); // "cash" or "online"
   const [remainingAmount, setRemainingAmount] = useState(0);
-  
-  // Check if we're on the specific route that allows status changes
+  const [paymentStatus, setPaymentStatus] = useState(null); // fully_paid / half_paid / less_than_half
+  const [paidPercentage, setPaidPercentage] = useState(0);
+
+  // Only editable on specific route
   const isStatusEditable = location.pathname === `/orderdetails/details/${id}`;
   const authAxios = getAuthAxios();
 
-  // Helper to check if event date is past
+  // Event is past?
   const isEventPast = orderDetails?.eventDate
     ? dayjs(orderDetails.eventDate).isBefore(dayjs(), "day")
     : false;
 
-  // Calculate payment status
-  const calculatePaymentStatus = () => {
-    if (!orderDetails) return null;
-    
-    const paidAmount = parseFloat(orderDetails.paidAmount) || 0;
-    const grandTotal = parseFloat(orderDetails.grandTotal) || 0;
-    const dueAmount = parseFloat(orderDetails.dueAmount) || 0;
-    
-    const remaining = dueAmount > 0 ? dueAmount : grandTotal - paidAmount;
-    setRemainingAmount(remaining);
-    
-    if (paidAmount >= grandTotal) {
-      return "fully_paid";
-    } else if (paidAmount >= grandTotal * 0.5) {
-      return "half_paid";
-    } else {
-      return "less_than_half";
-    }
-  };
-
-  // Handler for dropdown change
-  const handleStatusDropdownChange = (e) => {
-    const newStatus = e.target.value;
-    
-    // Check if trying to change to completed
-    if (newStatus === "completed") {
-      const paymentStatus = calculatePaymentStatus();
-      
-      if (paymentStatus === "fully_paid") {
-        // If fully paid, proceed directly
-        handleStatusChange("completed");
-      } else if (paymentStatus === "half_paid") {
-        // If half paid, show completion modal
-        setShowCompletionModal(true);
-      } else {
-        // If less than half paid, show error
-        alert(`Cannot mark as completed. Only ₹${orderDetails?.paidAmount || 0} paid out of ₹${orderDetails?.grandTotal || 0}. At least 50% payment required.`);
-        // Reset dropdown to current status
-        e.target.value = orderDetails?.orderStatus || "created";
-        return;
-      }
-    } else if (newStatus === "cancelled") {
-      setShowCancelModal(true);
-    } else if (newStatus === "rescheduled") {
-      setShowRescheduleModal(true);
-    } else {
-      handleStatusChange(newStatus);
-    }
-  };
-
+  /* -------------------------------------
+     FETCH ORDER DETAILS
+  -------------------------------------- */
   useEffect(() => {
     const fetchOrder = async () => {
       try {
         const response = await getAxios().get(`/orders/orderDetails/${id}`);
-        if (response.data) {
+        if (response.data?.data) {
           setOrderDetails(response.data.data);
         } else {
           setError("No order data returned from server.");
         }
       } catch (err) {
+        console.error(err);
         setError("Failed to fetch order.");
       } finally {
         setLoading(false);
@@ -105,20 +65,88 @@ const OrderDetails = () => {
     }
   }, [id]);
 
-  const handleStatusChange = async (newStatus, paymentMethod = null) => {
+  /* -------------------------------------
+     DERIVE PAYMENT STATUS FROM ORDER
+     (runs whenever orderDetails changes)
+  -------------------------------------- */
+  useEffect(() => {
     if (!orderDetails) return;
 
-    if (newStatus === orderDetails.orderStatus) return;
+    const paid = Number(orderDetails.paidAmount || 0);
+    const total = Number(orderDetails.grandTotal || 0);
+    const due =
+      orderDetails.dueAmount !== undefined && orderDetails.dueAmount !== null
+        ? Number(orderDetails.dueAmount)
+        : Math.max(total - paid, 0);
 
-    let reason = "";
+    setRemainingAmount(due);
+
+    let pct = 0;
+    if (total > 0) {
+      pct = Math.round((paid / total) * 100);
+    }
+    setPaidPercentage(pct);
+
+    let status;
+    if (paid >= total || due === 0) {
+      status = "fully_paid";
+    } else if (paid >= total / 2) {
+      status = "half_paid";
+    } else {
+      status = "less_than_half";
+    }
+
+    setPaymentStatus(status);
+  }, [orderDetails]);
+
+  /* -------------------------------------
+     STATUS DROPDOWN CHANGE HANDLER
+  -------------------------------------- */
+  const handleStatusDropdownChange = (e) => {
+    const newStatus = e.target.value;
+
+    if (!orderDetails) return;
+
+    // Handle COMPLETED rules
+    if (newStatus === "completed") {
+      if (paymentStatus === "fully_paid") {
+        // fully paid → directly mark completed
+        handleStatusChange("completed");
+      } else if (paymentStatus === "half_paid") {
+        // half paid → open modal to collect remaining
+        setShowCompletionModal(true);
+      } else {
+        // less than half
+        alert(
+          `Cannot mark as completed.\nOnly ₹${orderDetails?.paidAmount || 0} paid out of ₹${
+            orderDetails?.grandTotal || 0
+          }.\nAt least 50% payment required.`
+        );
+        e.target.value = orderDetails?.orderStatus || "created";
+      }
+      return;
+    }
 
     if (newStatus === "cancelled") {
-      reason = prompt("Please enter a reason for cancellation:");
-      if (!reason) {
-        alert("Cancellation reason is required.");
-        return;
-      }
+      setShowCancelModal(true);
+      return;
     }
+
+    if (newStatus === "rescheduled") {
+      setShowRescheduleModal(true);
+      return;
+    }
+
+    // Other simple status changes
+    handleStatusChange(newStatus);
+  };
+
+  /* -------------------------------------
+     UPDATE ORDER STATUS (generic)
+  -------------------------------------- */
+  const handleStatusChange = async (newStatus, paymentMethodForRemaining = null) => {
+    if (!orderDetails) return;
+    if (newStatus === orderDetails.orderStatus) return;
 
     setUpdatingStatus(true);
 
@@ -127,14 +155,9 @@ const OrderDetails = () => {
         status: newStatus,
       };
 
-      // Add reason for cancellation
-      if (newStatus === "cancelled") {
-        payload.reason = reason;
-      }
-
-      // Add payment method for completion with half payment
-      if (newStatus === "completed" && paymentMethod) {
-        payload.paymentMethod = paymentMethod;
+      // For completion with remaining payment collection
+      if (newStatus === "completed" && paymentMethodForRemaining) {
+        payload.paymentMethod = paymentMethodForRemaining; // "cash" / "online"
       }
 
       const response = await authAxios.put(
@@ -142,12 +165,31 @@ const OrderDetails = () => {
         payload
       );
 
-      if (response.data.success) {
-        setOrderDetails((prev) => ({
-          ...prev,
-          orderStatus: newStatus,
-          reason: newStatus === "cancelled" ? reason : prev.reason,
-        }));
+      if (response.data?.success) {
+        setOrderDetails((prev) => {
+          if (!prev) return prev;
+          const updated = { ...prev, orderStatus: newStatus };
+
+          // If marking completed, reflect payment as fully done in UI
+          if (newStatus === "completed") {
+            const prevPaid = Number(prev.paidAmount || 0);
+            const prevDue =
+              prev.dueAmount !== undefined && prev.dueAmount !== null
+                ? Number(prev.dueAmount)
+                : Math.max(Number(prev.grandTotal || 0) - prevPaid, 0);
+
+            const total = Number(prev.grandTotal || 0);
+            const newPaid =
+              prevDue > 0 ? prevPaid + prevDue : Math.max(prevPaid, total);
+
+            updated.paidAmount = newPaid;
+            updated.dueAmount = 0;
+            updated.paymentStatus = "PAID";
+          }
+
+          return updated;
+        });
+
         alert("Order status updated successfully.");
       } else {
         alert("Failed to update status.");
@@ -162,6 +204,9 @@ const OrderDetails = () => {
     }
   };
 
+  /* -------------------------------------
+     COMPLETION MODAL CONFIRM (for half-paid)
+  -------------------------------------- */
   const handleCompleteOrder = () => {
     if (!paymentMethod) {
       alert("Please select a payment method for the remaining amount.");
@@ -169,14 +214,17 @@ const OrderDetails = () => {
     }
 
     const confirmed = window.confirm(
-      `Mark order as completed and record remaining payment of ₹${remainingAmount} via ${paymentMethod}?`
+      `Mark order as completed and record remaining payment of ₹${remainingAmount} via ${paymentMethod.toUpperCase()}?`
     );
-    
+
     if (confirmed) {
       handleStatusChange("completed", paymentMethod);
     }
   };
 
+  /* -------------------------------------
+     CANCEL ORDER VIA MODAL
+  -------------------------------------- */
   const handleCancelOrder = async () => {
     if (!cancelReason.trim()) {
       alert("Cancellation reason is required.");
@@ -198,7 +246,7 @@ const OrderDetails = () => {
         }
       );
 
-      if (response.data.success) {
+      if (response.data?.success) {
         setOrderDetails((prev) => ({
           ...prev,
           orderStatus: "cancelled",
@@ -218,6 +266,9 @@ const OrderDetails = () => {
     }
   };
 
+  /* -------------------------------------
+     RESCHEDULE ORDER VIA MODAL
+  -------------------------------------- */
   const handleRescheduleOrder = async () => {
     if (!rescheduleReason.trim() || (!rescheduleDate && !rescheduleVenue)) {
       alert("Reason and at least one of Date, Time, or Venue are required.");
@@ -243,7 +294,7 @@ const OrderDetails = () => {
         payload
       );
 
-      if (response.data.success) {
+      if (response.data?.success) {
         setOrderDetails((prev) => ({
           ...prev,
           orderStatus: "rescheduled",
@@ -267,6 +318,9 @@ const OrderDetails = () => {
     }
   };
 
+  /* -------------------------------------
+     STATUS BADGE STYLE
+  -------------------------------------- */
   const getStatusColor = () => {
     switch (orderDetails?.orderStatus) {
       case "cancelled":
@@ -280,17 +334,14 @@ const OrderDetails = () => {
     }
   };
 
+  /* -------------------------------------
+     LOADING / ERROR STATES
+  -------------------------------------- */
   if (loading) return <div className="text-center mt-10">Loading...</div>;
   if (error)
     return <div className="text-center text-red-600 mt-10">{error}</div>;
   if (!orderDetails)
     return <div className="text-center mt-10">No order data available.</div>;
-
-  // Calculate payment status for UI
-  const paymentStatus = calculatePaymentStatus();
-  const paidPercentage = orderDetails?.grandTotal 
-    ? Math.round((orderDetails.paidAmount / orderDetails.grandTotal) * 100)
-    : 0;
 
   return (
     <div className="max-w-6xl mx-auto p-8 bg-gradient-to-r from-gray-100 to-slate-200 shadow-xl rounded-lg">
@@ -306,9 +357,11 @@ const OrderDetails = () => {
         </Link>
       </div>
 
-      {/* Payment Status Summary */}
+      {/* 💰 PAYMENT SUMMARY */}
       <div className="mb-6 p-4 bg-white rounded-lg shadow-sm">
-        <h3 className="text-xl font-semibold text-gray-800 mb-2">💰 Payment Status</h3>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">
+          💰 Payment Status
+        </h3>
         <div className="space-y-2">
           <div className="flex justify-between">
             <span>Grand Total:</span>
@@ -316,31 +369,64 @@ const OrderDetails = () => {
           </div>
           <div className="flex justify-between">
             <span>Paid Amount:</span>
-            <span className="font-bold text-green-600">₹{orderDetails.paidAmount}</span>
+            <span className="font-bold text-green-600">
+              ₹{orderDetails.paidAmount}
+            </span>
           </div>
           <div className="flex justify-between">
             <span>Due Amount:</span>
-            <span className="font-bold text-red-600">₹{orderDetails.dueAmount || (orderDetails.grandTotal - orderDetails.paidAmount)}</span>
+            <span className="font-bold text-red-600">
+              ₹
+              {orderDetails.dueAmount !== undefined &&
+              orderDetails.dueAmount !== null
+                ? orderDetails.dueAmount
+                : orderDetails.grandTotal - orderDetails.paidAmount}
+            </span>
           </div>
+
+          <div className="flex justify-between">
+            <span>Payment Type:</span>
+            <span className="font-bold">
+              {orderDetails.paymentType || "—"}
+            </span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Payment Status:</span>
+            <span className="font-bold">
+              {orderDetails.paymentStatus || "—"}
+            </span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Transaction ID:</span>
+            <span className="font-bold text-purple-700">
+              {orderDetails.merchantTransactionId || "—"}
+            </span>
+          </div>
+
           <div className="pt-2">
             <div className="flex justify-between mb-1">
               <span className="text-sm">Payment Progress</span>
               <span className="text-sm font-bold">{paidPercentage}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5">
-              <div 
-                className="bg-green-600 h-2.5 rounded-full" 
+              <div
+                className="bg-green-600 h-2.5 rounded-full"
                 style={{ width: `${paidPercentage}%` }}
               ></div>
             </div>
           </div>
+
           {paymentStatus === "half_paid" && (
             <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
               <p className="text-yellow-800 font-medium">
-                ⚠️ 50% payment received. Collect remaining ₹{remainingAmount} before marking as completed.
+                ⚠️ 50% payment received. Collect remaining ₹{remainingAmount} before
+                marking as completed.
               </p>
             </div>
           )}
+
           {paymentStatus === "less_than_half" && (
             <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
               <p className="text-red-800 font-medium">
@@ -351,6 +437,7 @@ const OrderDetails = () => {
         </div>
       </div>
 
+      {/* ORDER INFO */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-gray-700">
         <div className="space-y-2">
           <p>
@@ -366,10 +453,7 @@ const OrderDetails = () => {
                 className={`border px-2 py-1 rounded ${getStatusColor()}`}
               >
                 <option value="created">Created</option>
-                {!isEventPast && <option value="created">Created</option>}
-                {!isEventPast && (
-                  <option value="rescheduled">Rescheduled</option>
-                )}
+                {!isEventPast && <option value="rescheduled">Rescheduled</option>}
                 {!isEventPast && <option value="cancelled">Cancelled</option>}
                 {isEventPast && <option value="completed">Completed</option>}
               </select>
@@ -411,12 +495,15 @@ const OrderDetails = () => {
             {orderDetails.source}
           </p>
         </div>
+
         <div className="space-y-2">
           <p>
-            <strong>Customer Name:</strong> {orderDetails.customerName || "—"}
+            <strong>Customer Name:</strong>{" "}
+            {orderDetails.customerName || "—"}
           </p>
           <p>
-            <strong>Customer Number:</strong> {orderDetails.customerId?.mobile}
+            <strong>Customer Number:</strong>{" "}
+            {orderDetails.customerId?.mobile}
           </p>
           <p>
             <strong>Alternative Number:</strong>{" "}
@@ -455,6 +542,7 @@ const OrderDetails = () => {
         </div>
       </div>
 
+      {/* ORDERED ITEMS */}
       <h3 className="text-xl font-bold text-purple-900 mb-4">
         🛍️ Ordered Items
       </h3>
@@ -465,10 +553,9 @@ const OrderDetails = () => {
               key={idx}
               className="border border-gray-200 bg-white p-4 rounded-lg shadow-sm space-y-2"
             >
-              {/* Main service */}
               <div className="flex">
                 <img
-                  src={`${item?.image}`}
+                  src={item?.image}
                   alt={item.serviceName}
                   className="w-24 h-24 object-cover rounded-md mr-4"
                 />
@@ -483,7 +570,6 @@ const OrderDetails = () => {
                 </div>
               </div>
 
-              {/* Addon services / customized inputs */}
               {item.customizedInputs && item.customizedInputs.length > 0 && (
                 <div className="ml-6 mt-3 border-l-2 border-purple-300 pl-4 space-y-2">
                   <p className="font-semibold text-purple-700">
@@ -508,6 +594,7 @@ const OrderDetails = () => {
         )}
       </div>
 
+      {/* BILLING SUMMARY */}
       <div className="bg-white p-6 rounded shadow-sm my-10">
         <h3 className="text-2xl font-semibold mb-4 text-gray-800 border-b pb-2">
           💳 Billing Summary
@@ -525,24 +612,34 @@ const OrderDetails = () => {
           </div>
           <div className="flex justify-between py-2">
             <span>Delivery Charges</span>
-            <span>₹{orderDetails.deliveryCharges}</span>
+            <span>₹{orderDetails.deliveryCharges || 0}</span>
           </div>
           <div className="flex justify-between py-2 font-medium">
             <span>Paid Amount</span>
-            <span className="text-green-700">₹{orderDetails.paidAmount}</span>
+            <span className="text-green-700">
+              ₹{orderDetails.paidAmount}
+            </span>
           </div>
           <div className="flex justify-between py-2">
             <span>Due Amount</span>
-            <span className="text-red-600">₹{orderDetails.dueAmount || (orderDetails.grandTotal - orderDetails.paidAmount)}</span>
+            <span className="text-red-600">
+              ₹
+              {orderDetails.dueAmount !== undefined &&
+              orderDetails.dueAmount !== null
+                ? orderDetails.dueAmount
+                : orderDetails.grandTotal - orderDetails.paidAmount}
+            </span>
           </div>
           <div className="flex justify-between py-3 text-xl font-bold border-t mt-2 pt-3">
             <span>Grand Total</span>
-            <span className="text-purple-700">₹{orderDetails.grandTotal}</span>
+            <span className="text-purple-700">
+              ₹{orderDetails.grandTotal}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Cancel Modal */}
+      {/* CANCEL MODAL */}
       {showCancelModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white w-full max-w-md p-6 rounded-md shadow-lg">
@@ -579,8 +676,8 @@ const OrderDetails = () => {
           </div>
         </div>
       )}
-      
-      {/* Reschedule Modal */}
+
+      {/* RESCHEDULE MODAL */}
       {showRescheduleModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white w-full max-w-md p-6 rounded-md shadow-lg">
@@ -641,18 +738,20 @@ const OrderDetails = () => {
         </div>
       )}
 
-      {/* Completion Modal for 50% payment */}
+      {/* COMPLETION MODAL (for 50% payment) */}
       {showCompletionModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white w-full max-w-md p-6 rounded-md shadow-lg">
             <h2 className="text-xl font-semibold mb-4">Complete Order</h2>
             <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
               <p className="text-yellow-800 font-medium">
-                ⚠️ 50% payment received. Remaining amount to collect: 
-                <span className="font-bold text-lg ml-2">₹{remainingAmount}</span>
+                ⚠️ 50% payment received. Remaining amount to collect:{" "}
+                <span className="font-bold text-lg ml-2">
+                  ₹{remainingAmount}
+                </span>
               </p>
             </div>
-            
+
             <label className="block mb-2 font-medium">
               Select payment method for remaining amount:
             </label>
@@ -708,6 +807,8 @@ const OrderDetails = () => {
 };
 
 export default OrderDetails;
+
+
 // import React, { useEffect, useState } from "react";
 // import { useParams, Link, useLocation } from "react-router-dom";
 // import axios from "axios";
